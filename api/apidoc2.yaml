@@ -1,0 +1,115 @@
+openapi: 3.0.0
+paths:
+  /register.php:
+    post:
+      tags:
+        - Autentifikácia
+      summary: 'Registrácia používateľa'
+      operationId: 8f5197abd140df2b44cbadb63029ec5c
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: student1
+                password:
+                  type: string
+                  example: tajneheslo
+              type: object
+      responses:
+        '200':
+          description: Registrovaný
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: Registrovaný }
+                  api_token: { type: string, example: abc123token }
+                type: object
+        '409':
+          description: 'Používateľ už existuje'
+  /login.php:
+    post:
+      tags:
+        - Autentifikácia
+      summary: 'Prihlásenie používateľa'
+      operationId: 604cd0007f0c9233ac1ed66ac166d560
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: student1
+                password:
+                  type: string
+                  example: tajneheslo
+              type: object
+      responses:
+        '200':
+          description: Prihlásený
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: Prihlásený }
+                  api_token: { type: string, example: abc123token }
+                type: object
+        '401':
+          description: 'Zlé meno alebo heslo'
+  /token/refresh:
+    post:
+      tags:
+        - Autentifikácia
+      summary: 'Znovuvygenerovanie API tokenu'
+      operationId: a8e27cc8078e1b90639b736c57f481cc
+      responses:
+        '200':
+          description: 'Nový token'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Token aktualizovaný' }
+                  api_token: { type: string, example: novyTokenABC123 }
+                type: object
+        '401':
+          description: Neautorizovaný
+      security:
+        -
+          bearerAuth: []
+components:
+  schemas:
+    User:
+      required:
+        - username
+        - password
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: student1
+        password:
+          type: string
+          example: tajneheslo
+        api_token:
+          type: string
+          example: d87a01b29c...
+      type: object
+tags:
+  -
+    name: Autentifikácia
+    description: Autentifikácia

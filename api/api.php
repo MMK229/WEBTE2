@@ -1,4 +1,17 @@
 <?php
+if ($_SERVER['HTTP_ORIGIN'] === 'https://node119.webte.fei.stuba.sk') {
+    header('Access-Control-Allow-Origin: https://node119.webte.fei.stuba.sk');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit();
+    }
+}
+?>
+
+<?php
 
 require_once(__DIR__ . '/../config.php');
 require_once('Test.class.php');
@@ -14,16 +27,19 @@ $auth = new Auth($db);
 
 $publicRoutes = [
     'questions',
-    'questions/',     
-    'register.php',
-    'login.php'
+    'questions/',
+    'register',
+    'login'
 ];
+
 
 $routePath = $_GET['route'] ?? '';
 $pathIsPublic = false;
 
 
-if (preg_match('#^questions(/\d+)?$#', $routePath)) {
+if (preg_match('#^questions(/\d+)?$#', $routePath) ||
+    $routePath === 'register' ||
+    $routePath === 'login') {
     $pathIsPublic = true;
 }
 
@@ -58,9 +74,35 @@ switch ($method) {
         break;
 
     case 'POST':
-        if ($route[0] === 'tests') {
+        if ($route[0] === 'tests' && ($route[1] ?? '') === 'start') {
             $input = json_decode(file_get_contents('php://input'), true);
-
+            if (!isset($input['user_id'], $input['city'], $input['country'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Neplatné dáta"]);
+                break;
+            }
+            $result = $test->startTest($input['user_id'], $input['city'], $input['country']);
+            http_response_code(201);
+            echo json_encode($result);
+            break;
+        } elseif ($route[0] === 'tests' && ($route[1] ?? '') === 'answer') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (!isset($input['test_id'], $input['question_id'], $input['answered_correctly'], $input['time_taken'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Neplatné dáta"]);
+                break;
+            }
+            $result = $test->storeAnswer(
+                $input['test_id'],
+                $input['question_id'],
+                $input['answered_correctly'],
+                $input['time_taken']
+            );
+            http_response_code(201);
+            echo json_encode($result);
+            break;
+        } elseif ($route[0] === 'tests') {
+            $input = json_decode(file_get_contents('php://input'), true);
             if (!isset($input['user_id'], $input['city'], $input['country'], $input['questions']) || !is_array($input['questions'])) {
                 http_response_code(400);
                 echo json_encode(["error" => "Neplatné dáta"]);
@@ -76,7 +118,35 @@ switch ($method) {
                 echo json_encode($result);
             }
             break;
+        } elseif ($route[0] === 'register') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (!isset($input['username'], $input['password'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Zadaj meno a heslo"]);
+                break;
+            }
+            $response = $auth->register($input['username'], $input['password']);
+            if (isset($response['error'])) {
+                http_response_code(409);
+            }
+            echo json_encode($response);
+            break;
+        } elseif ($route[0] === 'login') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (!isset($input['username'], $input['password'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Zadaj meno a heslo"]);
+                break;
+            }
+            $response = $auth->login($input['username'], $input['password']);
+            if (isset($response['error'])) {
+                http_response_code(401);
+            }
+            echo json_encode($response);
+            break;
+
         }
+
 
         http_response_code(400);
         echo json_encode(["message" => "Bad request"]);

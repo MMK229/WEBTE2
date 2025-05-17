@@ -17,9 +17,18 @@ class Auth {
     }
 /**
  * @OA\Post(
- *     path="/register.php",
+ *     path="/skuska/api/api.php",
  *     summary="Registrácia používateľa",
  *     tags={"Autentifikácia"},
+ *     operationId="registerUser",
+ *     parameters={
+ *         @OA\Parameter(
+ *             name="route",
+ *             in="query",
+ *             required=true,
+ *             @OA\Schema(type="string", example="register")
+ *         )
+ *     },
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
@@ -59,9 +68,18 @@ class Auth {
     }
 /**
  * @OA\Post(
- *     path="/login.php",
+ *     path="/skuska/api/api.php",
  *     summary="Prihlásenie používateľa",
  *     tags={"Autentifikácia"},
+ *     operationId="loginUser",
+ *     parameters={
+ *         @OA\Parameter(
+ *             name="route",
+ *             in="query",
+ *             required=true,
+ *             @OA\Schema(type="string", example="login")
+ *         )
+ *     },
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
@@ -97,9 +115,18 @@ class Auth {
     }
 /**
  * @OA\Post(
- *     path="/token/refresh",
+ *     path="/skuska/api/api.php",
  *     summary="Znovuvygenerovanie API tokenu",
  *     tags={"Autentifikácia"},
+ *     operationId="refreshToken",
+ *     parameters={
+ *         @OA\Parameter(
+ *             name="route",
+ *             in="query",
+ *             required=true,
+ *             @OA\Schema(type="string", example="token/refresh")
+ *         )
+ *     },
  *     security={{"bearerAuth":{}}},
  *     @OA\Response(
  *         response=200,

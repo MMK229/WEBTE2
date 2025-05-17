@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 16, 2025 at 10:34 PM
+-- Generation Time: May 17, 2025 at 11:05 PM
 -- Server version: 8.0.42-0ubuntu0.24.04.1
 -- PHP Version: 8.3.17
 
@@ -66,7 +66,26 @@ INSERT INTO `questions` (`id`, `area`, `area_en`, `text_sk`, `text_en`, `correct
 (25, 'Logaritmy', 'Logarithms', 'MC: Ak ( log 3 = a ) a ( log 4 = b ), čomu sa rovná ( log 6 )?---\r\nA) ( frac{1}{2}ab )\r\nB) ( a + sqrt{b} )\r\nC) ( 3b )\r\nD) ( a + b )\r\nE) ( 2a )', 'MC: If ( log 3 = a ) and ( log 4 = b ), what is ( log 6 )?---\r\nA) ( frac{1}{2}ab )\r\nB) ( a + sqrt{b} )\r\nC) ( 3b )\r\nD) ( a + b )\r\nE) ( 2a )', 'D'),
 (26, 'Postupnosti', 'Sequences', 'MC: Nájdite stý člen ( a_{100} ) aritmetickej postupnosti ( {a_n}_{n=1}^{infty} ), ak ( a_{n+1} = a_n - frac{1}{3} ) a ( a_1 = 65 ).---\r\nA) ( a_{100} = -frac{100}{3} )\r\nB) ( a_{100} = 32 )\r\nC) ( a_{100} = frac{95}{3} )\r\nD) ( a_{100} = frac{194}{3} )\r\nE) ( a_{100} = 0 )', 'MC: Find the 100th term ( a_{100} ) of the arithmetic sequence ( {a_n}_{n=1}^{infty} ), given that ( a_{n+1} = a_n - frac{1}{3} ) and ( a_1 = 65 ).---\r\nA) ( a_{100} = -frac{100}{3} )\r\nB) ( a_{100} = 32 )\r\nC) ( a_{100} = frac{95}{3} )\r\nD) ( a_{100} = frac{194}{3} )\r\nE) ( a_{100} = 0 )', 'B'),
 (27, 'Geometria', 'Geometry', 'MC: V rovine leží priamka ( p ) a bod ( A ). Vzdialenosť bodu ( A ) od priamky ( p ) je 1. Na priamke ( p ) ležia body ( B ) a ( C ). Trojuholník ( ABC ) je rovnostranný. Aká je dĺžka strany ( BC )?---\r\nA) ( frac{1}{sqrt{3}} )\r\nB) Žiadna z ostatných odpovedí nie je správna.\r\nC) 1\r\nD) ( frac{2}{sqrt{3}} )\r\nE) ( sqrt{3} )', 'MC: In the plane, line ( p ) and point ( A ) are given. The distance from ( A ) to ( p ) is 1. Points ( B ) and ( C ) lie on ( p ). Triangle ( ABC ) is equilateral. What is the length of side ( BC )?---\r\nA) ( frac{1}{sqrt{3}} )\r\nB) None of the other answers is correct.\r\nC) 1\r\nD) ( frac{2}{sqrt{3}} )\r\nE) ( sqrt{3} )', 'D'),
-(28, 'Rovnice', 'Equations', 'MC: Rovnica ( 4^x - 2^x = 2 )---\r\nA) nemá žiadne riešenie.\r\nB) má práve jedno riešenie.\r\nC) má práve dve riešenia, ktorých súčet je 1.\r\nD) má práve dve riešenia, ( x = 0 ) a ( x = 1 ).\r\nE) má práve dve riešenia, ktorých súčet je -1.', 'MC: The equation ( 4^x - 2^x = 2 )---\r\nA) has no solution.\r\nB) has exactly one solution.\r\nC) has exactly two solutions whose sum is 1.\r\nD) has exactly two solutions, ( x = 0 ) and ( x = 1 ).\r\nE) has exactly two solutions whose sum is -1.', 'B');
+(28, 'Rovnice', 'Equations', 'MC: Rovnica ( 4^x - 2^x = 2 )---\r\nA) nemá žiadne riešenie.\r\nB) má práve jedno riešenie.\r\nC) má práve dve riešenia, ktorých súčet je 1.\r\nD) má práve dve riešenia, ( x = 0 ) a ( x = 1 ).\r\nE) má práve dve riešenia, ktorých súčet je -1.', 'MC: The equation ( 4^x - 2^x = 2 )---\r\nA) has no solution.\r\nB) has exactly one solution.\r\nC) has exactly two solutions whose sum is 1.\r\nD) has exactly two solutions, ( x = 0 ) and ( x = 1 ).\r\nE) has exactly two solutions whose sum is -1.', 'B'),
+(29, 'Algebra', 'Algebra', 'MC: Výraz ( frac{1 - sqrt{a}}{1 + sqrt{a}} : frac{1 - a}{1 + a} ) sa pre ( a geq 0,  a \neq 1 ) rovná výrazu:---\r\nA) ( frac{2sqrt{a}}{1 + 2sqrt{a} + a} )\r\nB) ( frac{1 + sqrt{a}}{1 - sqrt{a}} )\r\nC) Žiadna z ostatných odpovedí nie je správna\r\nD) ( frac{1}{1 + a} )\r\nE) ( frac{1}{4} )', 'MC: The expression ( frac{1 - sqrt{a}}{1 + sqrt{a}} : frac{1 - a}{1 + a} ) for ( a geq 0,  a \neq 1 ) equals:---\r\nA) ( frac{2sqrt{a}}{1 + 2sqrt{a} + a} )\r\nB) ( frac{1 + sqrt{a}}{1 - sqrt{a}} )\r\nC) None of the other answers is correct\r\nD) ( frac{1}{1 + a} )\r\nE) ( frac{1}{4} )', 'A'),
+(30, 'Algebra', 'Algebra', 'MC: Spoločný menovateľ zlomkov ( frac{x}{x+1},  frac{x-1}{x},  frac{x}{x+2} ) je:---\r\nA) ( x^2 - x - 2 )\r\nB) Žiadna z ostatných odpovedí nie je správna\r\nC) ( x - 2 )\r\nD) ( x )\r\nE) ( x + 1 )', 'MC: The least common denominator of the fractions ( frac{x}{x+1},  frac{x-1}{x},  frac{x}{x+2} ) is:---\r\nA) ( x^2 - x - 2 )\r\nB) None of the other answers is correct\r\nC) ( x - 2 )\r\nD) ( x )\r\nE) ( x + 1 )', 'A'),
+(31, 'Geometria', 'Geometry', 'MC: Nájdite počet priesečníkov grafu funkcie ( f(x) = x^2 - 3x + 4 ) a priamky ( y = x ).---\r\nA) Nemajú žiadny priesečník.\r\nB) Majú práve tri priesečníky.\r\nC) Žiadna z ostatných odpovedí nie je správna.\r\nD) Majú práve jeden priesečník.\r\nE) Majú práve dva priesečníky.', 'MC: Find the number of intersections between the graph of the function ( f(x) = x^2 - 3x + 4 ) and the line ( y = x ).---\r\nA) They have no intersection points.\r\nB) They have exactly three intersections.\r\nC) None of the other answers is correct.\r\nD) They have exactly one intersection.\r\nE) They have exactly two intersections.', 'D'),
+(32, 'Rovnice', 'Equations', 'MC: Množina všetkých riešení rovnice ( mathrm{tg},x = mathrm{cotg},x ) je---\r\nA) ( {kpi; k in mathbb{Z} } )\r\nB) prázdna množina\r\nC) ( left{ frac{pi}{4} + kpi; k in mathbb{Z} \right} )\r\nD) ( left{ frac{pi}{4} + kpi; k in mathbb{Z} \right} cup left{ frac{3pi}{4} + kpi; k in mathbb{Z} \right} )\r\nE) ( left{ frac{3pi}{4} + kpi; k in mathbb{Z} \right} )', 'MC: The set of all solutions of the equation ( 	an x = cot x ) is---\r\nA) ( {kpi; k in mathbb{Z} } )\r\nB) the empty set\r\nC) ( left{ frac{pi}{4} + kpi; k in mathbb{Z} \right} )\r\nD) ( left{ frac{pi}{4} + kpi; k in mathbb{Z} \right} cup left{ frac{3pi}{4} + kpi; k in mathbb{Z} \right} )\r\nE) ( left{ frac{3pi}{4} + kpi; k in mathbb{Z} \right} )', 'C'),
+(33, 'Rovnice', 'Equations', 'MC: Riešením rovnice ( log_{x-1} 8 = 3 ) je---\nA) ( x = 3 )\nB) ( x = 1 )\nC) ( x = 2 )\nD) ( x = 4 )\nE) ( x = 5 )', 'MC: The solution of the equation ( log_{x-1} 8 = 3 ) is---\nA) ( x = 3 )\nB) ( x = 1 )\nC) ( x = 2 )\nD) ( x = 4 )\nE) ( x = 5 )', 'A'),
+(34, 'Rovnice', 'Equations', 'MC: Riešením rovnice ( frac{1}{5^{x-1}} = 25 ) je---\nA) ( x = -1 )\nB) ( x = 1 )\nC) ( x = 2 )\nD) ( x = 0 )\nE) ( x = 3 )', 'MC: The solution of the equation ( frac{1}{5^{x-1}} = 25 ) is---\nA) ( x = -1 )\nB) ( x = 1 )\nC) ( x = 2 )\nD) ( x = 0 )\nE) ( x = 3 )', 'A'),
+(35, 'Algebra', 'Algebra', 'MC: Spoločný menovateľ zlomkov ( frac{x}{x-2}, frac{x}{x+2} ) je---\nA) ( x + 2 )\nB) ( x^2 )\nC) ( x^2 - 4 )\nD) ( x - 2 )\nE) Žiadna z ostatných odpovedí nie je správna', 'MC: The least common denominator of fractions ( frac{x}{x-2}, frac{x}{x+2} ) is---\nA) ( x + 2 )\nB) ( x^2 )\nC) ( x^2 - 4 )\nD) ( x - 2 )\nE) None of the other answers is correct', 'C'),
+(36, 'Rovnice', 'Equations', 'MC: Kvadratický trojčlen ( 3x^2 + 9x - 12 ) má rozklad---\nA) ( 3(x + 1)(x - 4) )\nB) ( (x - 3)(x + 4) )\nC) ( (x + 1)(x + 4) )\nD) ( 3(x + 4)(x - 1) )\nE) ( 3(x - 2)(x + 2) )', 'MC: The quadratic trinomial ( 3x^2 + 9x - 12 ) factors as---\nA) ( 3(x + 1)(x - 4) )\nB) ( (x - 3)(x + 4) )\nC) ( (x + 1)(x + 4) )\nD) ( 3(x + 4)(x - 1) )\nE) ( 3(x - 2)(x + 2) )', 'D'),
+(37, 'Rovnice', 'Equations', 'MC: Riešenie nerovnice ( frac{1 - x}{x + 5} geq 2 ) je---\nA) ( (-5, -3) )\nB) Žiadna z ostatných odpovedí nie je správna\nC) ( (-infty, -5) cup (-3, infty) )\nD) ( (-infty, -5) cup (-3, 0) )\nE) ( (-5, -3) )', 'MC: The solution of the inequality ( frac{1 - x}{x + 5} geq 2 ) is---\nA) ( (-5, -3) )\nB) None of the other answers is correct\nC) ( (-infty, -5) cup (-3, infty) )\nD) ( (-infty, -5) cup (-3, 0) )\nE) ( (-5, -3) )', 'C'),
+(38, 'Funkcie', 'Functions', 'MC: Funkcia ( f(x) = log(3 - x) ) má definičný obor---\nA) ( (-3, 3) )\nB) ( (-infty, -3) )\nC) ( (-infty, 3) )\nD) ( (-infty, 0) )\nE) ( (-3, 0) )', 'MC: The function ( f(x) = log(3 - x) ) has a domain---\nA) ( (-3, 3) )\nB) ( (-infty, -3) )\nC) ( (-infty, 3) )\nD) ( (-infty, 0) )\nE) ( (-3, 0) )', 'C'),
+(39, 'Logika', 'Logic', 'MC: Z výroku: Bod A nie je priesečníkom priamok ( p ) a ( q ), vyplýva---\nA) Bod A neleží na priamke ( p ) alebo ( q )\nB) Bod A neleží ani na priamke ( p ), ani ( q )\nC) Priamky ( p ) a ( q ) sú rovnobežné\nD) Buď ( p ) alebo ( q ) nie je priamka\nE) Priamky ( p ) a ( q ) majú iný priesečník', 'MC: From the statement: Point A is not the intersection of lines ( p ) and ( q ), it follows---\nA) Point A is not on line ( p ) or ( q )\nB) Point A is on neither line ( p ) nor ( q )\nC) Lines ( p ) and ( q ) are parallel\nD) Either ( p ) or ( q ) is not a line\nE) Lines ( p ) and ( q ) intersect elsewhere', 'A'),
+(40, 'Rovnice', 'Equations', 'MC: Riešenie rovnice ( 2^{x+1} = 4^{x-3} ) patrí do---\nA) množiny ( (-infty, 0) cup (0, infty) )\nB) intervalu ( (2, 3) )\nC) intervalu ( (1, 2) )\nD) intervalu ( (0, 1) )\nE) intervalu ( (1, infty) )', 'MC: The solution to the equation ( 2^{x+1} = 4^{x-3} ) belongs to---\nA) set ( (-infty, 0) cup (0, infty) )\nB) interval ( (2, 3) )\nC) interval ( (1, 2) )\nD) interval ( (0, 1) )\nE) interval ( (1, infty) )', 'B'),
+(41, 'Algebra', 'Algebra', 'MC: Výraz ( left( frac{1}{a} + 1 \right) : left( a + 2 + frac{1 - 2(a+1)^2}{a} \right) ) sa pre ( a \neq 0 ), ( a \neq -1 ) rovná výrazu---\nA) Žiadna z ostatných odpovedí nie je správna\nB) ( frac{1}{2a} )\nC) ( frac{1}{a} )\nD) ( frac{1}{2} )\nE) ( frac{1}{1 + a} )', 'MC: The expression ( left( frac{1}{a} + 1 \right) : left( a + 2 + frac{1 - 2(a+1)^2}{a} \right) ) for ( a \neq 0 ), ( a \neq -1 ) equals---\nA) None of the other answers is correct\nB) ( frac{1}{2a} )\nC) ( frac{1}{a} )\nD) ( frac{1}{2} )\nE) ( frac{1}{1 + a} )', 'D'),
+(42, 'Funkcie', 'Functions', 'MC: Lineárna funkcia ( f(x) = 3x + 1 )---\nA) má práve jeden nulový bod, a to ( frac{1}{3} )\nB) má práve jeden nulový bod, a to 1\nC) má dva nulové body, a to ( frac{1}{3} ) a 1\nD) Žiadna z ostatných odpovedí nie je pravdivá\nE) nemá žiadny nulový bod', 'MC: The linear function ( f(x) = 3x + 1 )---\nA) has exactly one zero, namely ( frac{1}{3} )\nB) has exactly one zero, namely 1\nC) has two zeros, ( frac{1}{3} ) and 1\nD) None of the other answers is correct\nE) has no zeros', 'D'),
+(43, 'Rovnice', 'Equations', 'MC: Rovnicia ( |x - 2| = 5 ) má množinu riešení---\nA) {1, 5}\nB) {7}\nC) {-3, 7}\nD) {-3, 7}\nE) {-7, 3}', 'MC: The equation ( |x - 2| = 5 ) has the solution set---\nA) {1, 5}\nB) {7}\nC) {-3, 7}\nD) {-3, 7}\nE) {-7, 3}', 'C'),
+(44, 'Funkcie', 'Functions', 'MC: Graf funkcie ( f(x) = 3x^2 - 5x + 2 )---\nA) leží celý nad osou x\nB) leží celý pod osou x\nC) žiadna z ostatných odpovedí nie je správna\nD) pretína os x v dvoch bodoch\nE) sa dotýka osi x v jednom bode', 'MC: The graph of the function ( f(x) = 3x^2 - 5x + 2 )---\nA) lies entirely above the x-axis\nB) lies entirely below the x-axis\nC) none of the other answers is correct\nD) intersects the x-axis in two points\nE) touches the x-axis in one point', 'D'),
+(45, 'Kombinatorika', 'Combinatorics', 'MC: Koľkými spôsobmi sa dá rozdeliť pravidelný šesťuholník ( ABCDEF ) na štyri neprekrývajúce sa trojuholníky?---\nA) Práve šiestimi\nB) Práve dvanástimi\nC) Práve trinástimi\nD) Práve osemnástimi\nE) Žiadna z ostatných odpovedí nie je správna', 'MC: In how many ways can a regular hexagon ( ABCDEF ) be divided into four non-overlapping triangles?---\nA) Exactly six\nB) Exactly twelve\nC) Exactly thirteen\nD) Exactly eighteen\nE) None of the other answers is correct', 'B'),
+(46, 'Rovnice', 'Equations', 'MC: Množina riešení rovnice ( 2 sin x = 	an x ) je---\nA) ( left{ frac{pi}{3} + kpi; k in mathbb{Z} \right} )\nB) ( left{ kpi; k in mathbb{Z} \right} cup left{ frac{pi}{3} + kpi; k in mathbb{Z} \right} )\nC) Rovnica nemá riešenie\nD) ( left{ x in mathbb{R}; x = frac{pi}{3} + 2kpi; k in mathbb{Z} \right} cup left{ x = -frac{pi}{3} + 2kpi; k in mathbb{Z} \right} )\nE) ( left{ frac{pi}{3}; k in mathbb{Z} \right} )', 'MC: The solution set of the equation ( 2 sin x = 	an x ) is---\nA) ( left{ frac{pi}{3} + kpi; k in mathbb{Z} \right} )\nB) ( left{ kpi; k in mathbb{Z} \right} cup left{ frac{pi}{3} + kpi; k in mathbb{Z} \right} )\nC) The equation has no solution\nD) ( left{ x in mathbb{R}; x = frac{pi}{3} + 2kpi; k in mathbb{Z} \right} cup left{ x = -frac{pi}{3} + 2kpi; k in mathbb{Z} \right} )\nE) ( left{ frac{pi}{3}; k in mathbb{Z} \right} )', 'D'),
+(47, 'Geometria', 'Geometry', 'MC: V rovine ležia dva trojuholníky. Ich prienik je úsečka. Ich zjednotením je:---\nA) Trojuholník alebo štvoruholník\nB) Trojuholník, štvoruholník, päťuholník alebo šesťuholník\nC) Trojuholník, štvoruholník alebo päťuholník\nD) Trojuholník\nE) Štvoruholník', 'MC: Two triangles lie in a plane. Their intersection is a segment. Their union is:---\nA) Triangle or quadrilateral\nB) Triangle, quadrilateral, pentagon or hexagon\nC) Triangle, quadrilateral or pentagon\nD) Triangle\nE) Quadrilateral', 'C');
 
 -- --------------------------------------------------------
 
@@ -87,7 +106,7 @@ CREATE TABLE `tests` (
 --
 
 INSERT INTO `tests` (`id`, `user_id`, `datetime`, `city`, `country`) VALUES
-(3, 1, '2025-05-08 23:23:34', 'Bratislava', 'Slovensko');
+(4, 2, '2025-05-18 00:51:14', 'Bratislava', 'Slovensko');
 
 -- --------------------------------------------------------
 
@@ -102,6 +121,13 @@ CREATE TABLE `test_questions` (
   `answered_correctly` tinyint(1) DEFAULT NULL,
   `time_taken` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_slovak_ci;
+
+--
+-- Dumping data for table `test_questions`
+--
+
+INSERT INTO `test_questions` (`id`, `test_id`, `question_id`, `answered_correctly`, `time_taken`) VALUES
+(5, 4, 5, 0, 5.7);
 
 -- --------------------------------------------------------
 
@@ -121,7 +147,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `api_token`) VALUES
-(1, 'Juraj', '$2y$10$/wW9RVGDJkPMslzWCyhee.hGI5tW8wnJtgXenB1g1p9EyN6wE3wsq', 'b36b5246df847044ecbb2d4cab8588c9bf58569276e8e7d8f465d9eca709df04');
+(2, 'xhusek@stuba.sk', '$2y$10$u0PayNPtcmeNrbFrxg8Bt.j6nriuOuzEXkBIRdw5ygrU0d894iMNy', '3fbfc3c69d3ea39b925ab4026d03c13da32cd41adf2402bf20dc135f9470bdac');
 
 --
 -- Indexes for dumped tables
@@ -163,25 +189,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `test_questions`
 --
 ALTER TABLE `test_questions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

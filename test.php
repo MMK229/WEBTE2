@@ -152,9 +152,7 @@
     <button id="toggle-lang-btn" class="lang-btn">English</button>
 </div>
 <div class="container">
-    <h1 id="main-title">Matematický Test</h1>
-
-    <div class="attempt-info" id="attempt-info-display" style="display: none;"></div>
+    <h1 id="main-title-test">Matematický Test</h1> <div class="attempt-info" id="attempt-info-display" style="display: none;"></div>
     <div class="progress-info" id="progress-info-display" style="display: none;">
         <span id="question-label">Otázka</span> <span id="current-question-number">0</span> <span id="of-label">z</span> <span id="total-questions">0</span>
     </div>
@@ -184,40 +182,35 @@
                     <span id="stat-slide-indicator"></span>
                     <button id="next-stat-btn" class="stat-nav-btn">&gt;</button>
                 </div>
-                <div id="category-stats-slide-content">
-                </div>
+                <div id="category-stats-slide-content"></div>
             </div>
-
             <ul id="results-list"></ul>
         </div>
     </div>
     <button id="start-test-btn">Začať Test</button>
 </div>
 
-
-    <!--
-    *****       ****
-    SKRIPT ZAČÍNA TU
-    *****       ****
-    -->
 <script>
-    // TODO: Treba urobiť KaTeX, zatiaľ sa otázky printujú len ako raw text
-    // KONŠTANTY (netreba meniť, api je na node53)
     const apiBase = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
     const localStorageKeyAttempts = 'mathTestAttempts';
-    const localStorageKeyLanguage = 'mathTestLanguage';
+    let currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk'; // Spoločný jazyk pre obe stránky
 
     let allQuestions = [];
     let currentQuestionIndex = 0;
     let userAnswers = [];
     let questionStartTime;
     let testAttemptNumber = 0;
-    let currentLanguage = localStorage.getItem(localStorageKeyLanguage) || 'sk';
 
     let selectedMcOptionValue = null;
     let selectedMcOptionElement = null;
 
-    const mainTitleEl = document.getElementById('main-title');
+    let currentTestId = null;       // Na uloženie ID aktuálneho testu z backendu
+    let currentUserApiToken = null;
+    let currentUserId = null;       // Na uloženie ID prihláseného používateľa (ak ho máme)
+    let loggedInUsername = null;  // Pre prípadné zobrazenie mena
+
+    // UI Elementy
+    const mainTitleElTest = document.getElementById('main-title-test'); // Unikátne ID pre titulok na tejto stránke
     const toggleLangBtn = document.getElementById('toggle-lang-btn');
     const startTestBtn = document.getElementById('start-test-btn');
     const questionContainer = document.querySelector('.question-container');
@@ -251,16 +244,15 @@
     let categoryStatKeys = [];
     let currentCategoryStatIndex = 0;
 
-
-    // TRANSLATIONS logika
-    const uiStrings = {
+    const uiStrings = { // Rovnaké uiStrings ako predtým, pre konzistenciu
         sk: {
-            mathTest: "Matematický Test", startTest: "Začať Test", loadingTest: "Načítavam...", loadingQuestions: "Načítavam otázky...",
+            pageTitleTest: "Test z Matematiky", mainTitleTest: "Matematický Test",
+            startTest: "Začať Test", loadingTest: "Načítavam...", loadingQuestions: "Načítavam otázky...",
             errorLoadingQuestions: "Chyba pri načítaní otázok. Skúste to znova neskôr.", noQuestions: "Nepodarilo sa načítať žiadne otázky alebo sú prázdne.",
             yourAttempt: "Toto je váš pokus č.", question: "Otázka", of: "z", yourAnswer: "Vaša odpoveď:",
             pleaseAnswer: "Prosím, zadajte odpoveď.", answerCorrect: "Vaša odpoveď je SPRÁVNA.", answerIncorrect: "Vaša odpoveď je NESPRÁVNA.",
             correctAnswerIs: "Správna odpoveď:", timeTaken: "Čas:", secondsSuffix: "s.", resultsTitle: "Výsledky Testu",
-            totalScore: "Celkové skóre:", questionsSuffix: "otázok", startNewTest: "Začať Nový Test", switchToEnglish: "English",
+            totalScore: "Celkové skóre:", questionsSuffix: "otázok", startNewTest: "Začať Nový Test", switchToEnglish: "Switch to English",
             switchToSlovak: "Slovenčina", questionTextLabel: "Otázka:", yourAnswerLabel: "Vaša odpoveď:", correctAnswerLabel: "Správna odpoveď:",
             correctTag: "(Správne)", incorrectTag: "(Nesprávne)", timeLabel: "Čas:",
             confirmAnswer: "Potvrdiť", nextQuestion: "Ďalšia otázka",
@@ -268,39 +260,51 @@
             categoryStatsTitle: "Štatistika podľa oblastí:", correctOutOfInArea: "Správne",
             questionsInAreaShort: "otázok", reviseFollowing: "Odporúčame zopakovať z tejto oblasti:",
             allCorrectInArea: "Výborne! Všetky otázky z tejto oblasti boli zodpovedané správne.",
-            statCarouselIndicatorText: "Oblasť"
+            statCarouselIndicatorText: "Oblasť",
+            errorInitializingTest: "Chyba: Nepodarilo sa inicializovať test na serveri. Výsledky nebudú uložené.",
+            errorCommunicationInitializingTest: "Chyba komunikácie pri inicializácii testu.",
+            notLoggedInNoSave: "Používateľ nie je prihlásený, test nebude ukladaný na server.",
+            testResultsSaved: "Výsledky testu úspešne uložené na server.",
+            errorSavingTestResults: "Nepodarilo sa uložiť výsledky testu na server.",
+            errorCommunicationSavingTest: "Chyba komunikácie pri ukladaní výsledkov testu."
         },
         en: {
-            mathTest: "Mathematics Test", startTest: "Start Test", loadingTest: "Loading...", loadingQuestions: "Loading questions...",
+            pageTitleTest: "Mathematics Test", mainTitleTest: "Mathematics Test",
+            startTest: "Start Test", loadingTest: "Loading...", loadingQuestions: "Loading questions...",
             errorLoadingQuestions: "Error loading questions. Please try again later.", noQuestions: "No questions found or questions are empty.",
             yourAttempt: "This is your attempt no.", question: "Question", of: "of", yourAnswer: "Your answer:",
             pleaseAnswer: "Please enter an answer.", answerCorrect: "Your answer is CORRECT.", answerIncorrect: "Your answer is INCORRECT.",
             correctAnswerIs: "Correct answer:", timeTaken: "Time:", secondsSuffix: "s.", resultsTitle: "Test Results",
             totalScore: "Total score:", questionsSuffix: "questions", startNewTest: "Start New Test", switchToEnglish: "English",
-            switchToSlovak: "Slovak", questionTextLabel: "Question:", yourAnswerLabel: "Your answer:", correctAnswerLabel: "Correct answer:",
+            switchToSlovak: "Prepnúť na Slovenčinu", questionTextLabel: "Question:", yourAnswerLabel: "Your answer:", correctAnswerLabel: "Correct answer:",
             correctTag: "(Correct)", incorrectTag: "(Incorrect)", timeLabel: "Time:",
             confirmAnswer: "Confirm", nextQuestion: "Next Question",
             pleaseSelectAnswer: "Please select an option.", pleaseWriteAnswer: "Please write your answer.",
             categoryStatsTitle: "Statistics by Area:", correctOutOfInArea: "Correct",
             questionsInAreaShort: "questions", reviseFollowing: "We recommend revising the following from this area:",
             allCorrectInArea: "Excellent! All questions in this area were answered correctly.",
-            statCarouselIndicatorText: "Area"
+            statCarouselIndicatorText: "Area",
+            errorInitializingTest: "Error: Could not initialize test on the server. Results will not be saved.",
+            errorCommunicationInitializingTest: "Communication error during test initialization.",
+            notLoggedInNoSave: "User not logged in, test results will not be saved to the server.",
+            testResultsSaved: "Test results successfully saved to the server.",
+            errorSavingTestResults: "Failed to save test results to the server.",
+            errorCommunicationSavingTest: "Communication error when saving test results."
         }
     };
 
-    /////
-    // FUNKCIE
-    /////
     function t(key) { return uiStrings[currentLanguage][key] || key; }
 
     function updateUIText() {
         document.documentElement.lang = currentLanguage;
-        mainTitleEl.textContent = t('mathTest');
-        toggleLangBtn.textContent = currentLanguage === 'sk' ? t('switchToEnglish') : t('switchToSlovak');
+        document.title = t('pageTitleTest');
+        mainTitleElTest.textContent = t('mainTitleTest');
+        if (toggleLangBtn) {
+            toggleLangBtn.textContent = currentLanguage === 'sk' ? t('switchToEnglish') : t('switchToSlovak');
+        }
         if (startTestBtn.style.display !== 'none') startTestBtn.textContent = t('startTest');
-        confirmAnswerBtn.textContent = t('confirmAnswer'); // Tento sa aktualizuje vždy, keďže jeho viditeľnosť sa mení
-        nextQuestionBtn.textContent = t('nextQuestion');   // Tento sa aktualizuje vždy
-
+        confirmAnswerBtn.textContent = t('confirmAnswer');
+        nextQuestionBtn.textContent = t('nextQuestion');
         questionLabelEl.textContent = t('question');
         ofLabelEl.textContent = t('of');
         yourAnswerLabelEl.textContent = t('yourAnswer');
@@ -310,28 +314,20 @@
         }
     }
 
-    // Ukladanie a loadovanie attemptov = LOKÁLNE pre NEPRIHLÁSENÝCH
-    // TODO: Musí byť aj pre prihlásených (inou logikou)
+    function getUserLocation() {
+        return new Promise(resolve => {
+            resolve({ city: "Nezistené", country: "Nezistené" });
+        });
+    }
+
+
     function loadTestAttempts() { return localStorage.getItem(localStorageKeyAttempts) ? parseInt(localStorage.getItem(localStorageKeyAttempts)) : 0; }
     function saveTestAttempts(attempts) { localStorage.setItem(localStorageKeyAttempts, attempts); }
 
-    toggleLangBtn.addEventListener('click', () => {
-        currentLanguage = currentLanguage === 'sk' ? 'en' : 'sk';
-        localStorage.setItem(localStorageKeyLanguage, currentLanguage);
-        updateUIText();
-        if (allQuestions.length > 0 && questionContainer.style.display === 'block' && currentQuestionIndex < allQuestions.length) {
-            displayQuestion();
-        }
-        if (testResultsArea.style.display === 'block') {
-            finishTest(false);
-        }
-    });
-
-    // Tlačidlo začať test
     startTestBtn.addEventListener('click', async () => {
         startTestBtn.disabled = true;
         startTestBtn.textContent = t('loadingTest');
-        questionTextEl.textContent = t('loadingQuestions');
+        questionFeedbackEl.style.display = 'none'; // Skryť staré feedbacky
         questionContainer.style.display = 'block';
         answerSectionWA.style.display = 'none';
         mcOptionsContainer.style.display = 'none';
@@ -341,12 +337,52 @@
         categoryStatsTitleEl.style.display = 'none';
         categoryStatsSlideContentEl.innerHTML = '';
 
+        currentUserApiToken = localStorage.getItem('apiToken');
+        currentUserId = localStorage.getItem('userId'); // Načítame userId
+
         try {
             const response = await fetch(apiBase + 'questions');
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            if (!response.ok) throw new Error(`${t('errorLoadingQuestions')} Status: ${response.status}`);
             allQuestions = await response.json();
 
             if (allQuestions && allQuestions.length > 0) {
+                currentTestId = null;
+
+                if (currentUserApiToken && currentUserId) {
+                    const location = await getUserLocation(); // Získanie lokality
+                    try {
+                        const startTestResponse = await fetch(apiBase + 'tests/start', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + currentUserApiToken
+                            },
+                            body: JSON.stringify({ city: location.city, country: location.country })
+                        });
+                        const startTestData = await startTestResponse.json();
+                        if (startTestResponse.ok && startTestData.test_id) {
+                            currentTestId = startTestData.test_id;
+                            console.log('Test inicializovaný s ID:', currentTestId);
+                        } else {
+                            console.error('Nepodarilo sa inicializovať test na backende:', startTestData.error || startTestData.message || 'Neznáma chyba');
+                            questionFeedbackEl.textContent = t('errorInitializingTest') + ` (${startTestData.error || startTestData.message})`;
+                            questionFeedbackEl.className = 'feedback error';
+                            questionFeedbackEl.style.display = 'block';
+                        }
+                    } catch (initError) {
+                        console.error('Chyba pri komunikácii pre inicializáciu testu:', initError);
+                        questionFeedbackEl.textContent = t('errorCommunicationInitializingTest');
+                        questionFeedbackEl.className = 'feedback error';
+                        questionFeedbackEl.style.display = 'block';
+                    }
+                } else {
+                    console.log(t('notLoggedInNoSave'));
+                    // Zobraziť informatívnu správu, že test nebude uložený
+                    questionFeedbackEl.textContent = t('notLoggedInNoSave');
+                    questionFeedbackEl.className = 'feedback'; // neutrálny štýl
+                    questionFeedbackEl.style.display = 'block';
+                }
+
                 testAttemptNumber = loadTestAttempts() + 1;
                 saveTestAttempts(testAttemptNumber);
                 attemptInfoDisplayEl.textContent = `${t('yourAttempt')} ${testAttemptNumber}.`;
@@ -361,6 +397,7 @@
                 questionContainer.style.display = 'block';
                 progressInfoDisplayEl.style.display = 'block';
                 displayQuestion();
+
             } else {
                 questionTextEl.textContent = t('noQuestions');
                 startTestBtn.disabled = false;
@@ -368,55 +405,35 @@
             }
         } catch (error) {
             console.error("Error loading questions:", error);
-            questionTextEl.textContent = `${t('errorLoadingQuestions')} (${error.message})`;
+            questionTextEl.textContent = `${error.message}`;
             startTestBtn.disabled = false;
             startTestBtn.textContent = t('startTest');
         }
     });
-
-
-    // Ukazovateľ otázok
 
     function displayQuestion() {
         if (currentQuestionIndex < allQuestions.length) {
             const question = allQuestions[currentQuestionIndex];
             const questionTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
             let rawText = question[questionTextKey] || question['text_sk'];
-
-            // Máme dva typy otázok
-            // WA = Writable (napísať odpoveď)
-            // MC = Multiple choice (vybrať odpoveď buttonmi)
             let questionType = "WA";
-            if (rawText.startsWith("MC:")) {
-                questionType = "MC";
-                rawText = rawText.substring(3).trim();
-            } else if (rawText.startsWith("WA:")) {
-                questionType = "WA";
-                rawText = rawText.substring(3).trim();
-            }
+            if (rawText.startsWith("MC:")) { questionType = "MC"; rawText = rawText.substring(3).trim(); }
+            else if (rawText.startsWith("WA:")) { questionType = "WA"; rawText = rawText.substring(3).trim(); }
 
-            selectedMcOptionValue = null;
-            selectedMcOptionElement = null;
-
+            selectedMcOptionValue = null; selectedMcOptionElement = null;
             mcOptionsContainer.innerHTML = '';
             answerSectionWA.style.display = 'none';
             mcOptionsContainer.style.display = 'none';
             confirmAnswerBtn.style.display = 'block';
             nextQuestionBtn.style.display = 'none';
-            questionFeedbackEl.style.display = 'none';
-            questionFeedbackEl.textContent = '';
-            questionFeedbackEl.className = 'feedback';
+            if(questionFeedbackEl.classList.contains('error')) { /* No-op, nechaj error správu */ }
+            else { questionFeedbackEl.style.display = 'none'; questionFeedbackEl.textContent = ''; questionFeedbackEl.className = 'feedback';}
 
-            correctAnswerWaDisplayEl.style.display = 'none';
-            correctAnswerWaDisplayEl.textContent = '';
-
-            answerInputEl.value = '';
-            answerInputEl.disabled = false;
+            correctAnswerWaDisplayEl.style.display = 'none'; correctAnswerWaDisplayEl.textContent = '';
+            answerInputEl.value = ''; answerInputEl.disabled = false;
             answerInputEl.classList.remove('user-correct', 'user-incorrect');
-            confirmAnswerBtn.disabled = false;
-            confirmAnswerBtn.textContent = t('confirmAnswer');
+            confirmAnswerBtn.disabled = false; confirmAnswerBtn.textContent = t('confirmAnswer');
 
-            // MULTIPLE CHOICE
             if (questionType === "MC") {
                 const parts = rawText.split("---");
                 questionTextEl.innerHTML = parts[0].trim();
@@ -426,8 +443,7 @@
                         const optionButton = document.createElement('button');
                         const match = optionText.match(/^([A-Z])\)\s*(.*)/s);
                         if (match) {
-                            optionButton.dataset.value = match[1];
-                            optionButton.innerHTML = optionText;
+                            optionButton.dataset.value = match[1]; optionButton.innerHTML = optionText;
                             optionButton.classList.add('mc-option-button');
                             optionButton.onclick = () => selectMcOption(optionButton, match[1]);
                             mcOptionsContainer.appendChild(optionButton);
@@ -440,7 +456,6 @@
                 answerSectionWA.style.display = 'block';
                 answerInputEl.focus();
             }
-
             currentQuestionNumberEl.textContent = currentQuestionIndex + 1;
             questionStartTime = new Date();
         } else {
@@ -450,19 +465,14 @@
 
     function selectMcOption(buttonElement, optionValue) {
         if (confirmAnswerBtn.disabled) return;
-        if (selectedMcOptionElement) {
-            selectedMcOptionElement.classList.remove('marked');
-        }
+        if (selectedMcOptionElement) { selectedMcOptionElement.classList.remove('marked'); }
         buttonElement.classList.add('marked');
-        selectedMcOptionValue = optionValue;
-        selectedMcOptionElement = buttonElement;
+        selectedMcOptionValue = optionValue; selectedMcOptionElement = buttonElement;
     }
 
     confirmAnswerBtn.addEventListener('click', () => {
         const timeTaken = (new Date() - questionStartTime) / 1000;
-        let userAnswer;
-        let questionType;
-
+        let userAnswer, questionType;
         const currentQuestion = allQuestions[currentQuestionIndex];
         const questionTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
         let questionIdentifierText = currentQuestion[questionTextKey] || currentQuestion['text_sk'];
@@ -471,40 +481,30 @@
             questionType = "MC";
             if (!selectedMcOptionValue) {
                 questionFeedbackEl.textContent = t('pleaseSelectAnswer');
-                questionFeedbackEl.className = 'feedback';
-                questionFeedbackEl.style.display = 'block';
-                return;
+                questionFeedbackEl.className = 'feedback'; questionFeedbackEl.style.display = 'block'; return;
             }
             userAnswer = selectedMcOptionValue;
         } else {
-            questionType = "WA";
-            userAnswer = answerInputEl.value.trim();
+            questionType = "WA"; userAnswer = answerInputEl.value.trim();
             if (userAnswer === "") {
                 questionFeedbackEl.textContent = t('pleaseWriteAnswer');
-                questionFeedbackEl.className = 'feedback';
-                questionFeedbackEl.style.display = 'block';
-                return;
+                questionFeedbackEl.className = 'feedback'; questionFeedbackEl.style.display = 'block'; return;
             }
         }
 
-        confirmAnswerBtn.disabled = true;
-        answerInputEl.disabled = true;
+        confirmAnswerBtn.disabled = true; answerInputEl.disabled = true;
         Array.from(mcOptionsContainer.children).forEach(btn => btn.disabled = true);
 
         const correctAnswerNormalized = String(currentQuestion.correct_answer).trim().replace(',', '.');
         let userAnswerNormalized = String(userAnswer).trim().replace(',', '.');
         let isCorrect = false;
 
-        if (questionType === "MC") {
-            isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalized.toLowerCase();
-        } else {
+        if (questionType === "MC") { isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalized.toLowerCase(); }
+        else {
             const userAnswerNum = parseFloat(userAnswerNormalized);
             const correctAnswerNum = parseFloat(correctAnswerNormalized);
-            if (!isNaN(userAnswerNum) && !isNaN(correctAnswerNum)) {
-                isCorrect = Math.abs(userAnswerNum - correctAnswerNum) < 0.005;
-            } else {
-                isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalized.toLowerCase();
-            }
+            if (!isNaN(userAnswerNum) && !isNaN(correctAnswerNum)) { isCorrect = Math.abs(userAnswerNum - correctAnswerNum) < 0.005; }
+            else { isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalized.toLowerCase(); }
         }
 
         userAnswers.push({
@@ -513,7 +513,6 @@
         });
 
         correctAnswerWaDisplayEl.style.display = 'none';
-
         if (questionType === "MC") {
             if (selectedMcOptionElement) {
                 selectedMcOptionElement.classList.remove('marked');
@@ -521,12 +520,10 @@
             }
             if (!isCorrect) {
                 Array.from(mcOptionsContainer.children).forEach(btn => {
-                    if (btn.dataset.value === currentQuestion.correct_answer) {
-                        btn.classList.add('actual-correct');
-                    }
+                    if (btn.dataset.value === currentQuestion.correct_answer) { btn.classList.add('actual-correct'); }
                 });
             }
-        } else { // WA
+        } else {
             answerInputEl.classList.add(isCorrect ? 'user-correct' : 'user-incorrect');
             if (!isCorrect) {
                 correctAnswerWaDisplayEl.textContent = currentQuestion.correct_answer;
@@ -535,11 +532,8 @@
         }
 
         let feedbackText = `${isCorrect ? t('answerCorrect') : t('answerIncorrect')} <br>`;
-        if (!isCorrect && questionType === "MC") {
-            feedbackText += `${t('correctAnswerIs')} ${currentQuestion.correct_answer}.<br>`;
-        }
+        if (!isCorrect && questionType === "MC") { feedbackText += `${t('correctAnswerIs')} ${currentQuestion.correct_answer}.<br>`; }
         feedbackText += `${t('timeTaken')} ${timeTaken.toFixed(2)}${t('secondsSuffix')}`;
-
         questionFeedbackEl.innerHTML = feedbackText;
         questionFeedbackEl.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
         questionFeedbackEl.style.display = 'block';
@@ -550,107 +544,56 @@
         nextQuestionBtn.focus();
     });
 
-    nextQuestionBtn.addEventListener('click', () => {
-        currentQuestionIndex++;
-        displayQuestion();
-    });
+    nextQuestionBtn.addEventListener('click', () => { currentQuestionIndex++; displayQuestion(); });
 
-
-    // ŠTATISTIKY
-    // Používateľovi ukazujú v čom sa má zlepšiť
-    // TODO: "Odporúčame zopakovať z tejto oblasti:" sekcia sa mi trochu nezdá, idk
     function createCategoryStatElement(areaName, stats) {
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('category-stat-item');
-
-        const titleH4 = document.createElement('h4');
-        titleH4.textContent = areaName;
-        itemDiv.appendChild(titleH4);
-
-        const summaryP = document.createElement('p');
-        summaryP.classList.add('category-stat-summary');
+        const itemDiv = document.createElement('div'); itemDiv.classList.add('category-stat-item');
+        const titleH4 = document.createElement('h4'); titleH4.textContent = areaName; itemDiv.appendChild(titleH4);
+        const summaryP = document.createElement('p'); summaryP.classList.add('category-stat-summary');
         summaryP.textContent = `${t('correctOutOfInArea')} ${stats.correct} ${t('of')} ${stats.total} ${t('questionsInAreaShort')}.`;
         itemDiv.appendChild(summaryP);
-
-        const progressBarContainer = document.createElement('div');
-        progressBarContainer.classList.add('progress-bar-container');
-
-        const progressBarCorrect = document.createElement('div');
-        progressBarCorrect.classList.add('progress-bar-correct');
+        const progressBarContainer = document.createElement('div'); progressBarContainer.classList.add('progress-bar-container');
+        const progressBarCorrect = document.createElement('div'); progressBarCorrect.classList.add('progress-bar-correct');
         const percentageCorrect = (stats.total > 0) ? (stats.correct / stats.total) * 100 : 0;
         setTimeout(() => { progressBarCorrect.style.width = percentageCorrect.toFixed(1) + '%'; }, 50);
         progressBarCorrect.textContent = `${percentageCorrect.toFixed(0)}% (${stats.correct}/${stats.total})`;
-
-        progressBarContainer.appendChild(progressBarCorrect);
-        itemDiv.appendChild(progressBarContainer);
-
+        progressBarContainer.appendChild(progressBarCorrect); itemDiv.appendChild(progressBarContainer);
         if (stats.questionsToReviseText.length > 0) {
-            const reviseTitleP = document.createElement('p');
-            reviseTitleP.innerHTML = `<strong>${t('reviseFollowing')}</strong>`;
-            itemDiv.appendChild(reviseTitleP);
-            const reviseListUl = document.createElement('ul');
-            reviseListUl.classList.add('revise-questions-list');
+            const reviseTitleP = document.createElement('p'); reviseTitleP.innerHTML = `<strong>${t('reviseFollowing')}</strong>`; itemDiv.appendChild(reviseTitleP);
+            const reviseListUl = document.createElement('ul'); reviseListUl.classList.add('revise-questions-list');
             stats.questionsToReviseText.forEach(qText => {
-                const li = document.createElement('li');
-                li.textContent = qText;
-                reviseListUl.appendChild(li);
+                const li = document.createElement('li'); li.textContent = qText; reviseListUl.appendChild(li);
             });
             itemDiv.appendChild(reviseListUl);
         } else if (stats.total > 0) {
-            const allCorrectP = document.createElement('p');
-            allCorrectP.classList.add('all-correct-message');
-            allCorrectP.textContent = t('allCorrectInArea');
-            itemDiv.appendChild(allCorrectP);
+            const allCorrectP = document.createElement('p'); allCorrectP.classList.add('all-correct-message');
+            allCorrectP.textContent = t('allCorrectInArea'); itemDiv.appendChild(allCorrectP);
         }
         return itemDiv;
     }
 
     function displayCurrentCategoryStat() {
         if (categoryStatKeys.length === 0) {
-            categoryStatsCarouselEl.style.display = 'none';
-            categoryStatsTitleEl.style.display = 'none';
-            return;
+            categoryStatsCarouselEl.style.display = 'none'; categoryStatsTitleEl.style.display = 'none'; return;
         }
-
-        categoryStatsCarouselEl.style.display = 'block';
-        categoryStatsTitleEl.style.display = 'block'; // Zobraziť titulok carouselu
+        categoryStatsCarouselEl.style.display = 'block'; categoryStatsTitleEl.style.display = 'block';
         categoryStatsTitleEl.textContent = t('categoryStatsTitle');
-
-
         const currentAreaName = categoryStatKeys[currentCategoryStatIndex];
         const stats = areaStatsGlobal[currentAreaName];
-
         categoryStatsSlideContentEl.innerHTML = '';
         categoryStatsSlideContentEl.appendChild(createCategoryStatElement(currentAreaName, stats));
-
         statSlideIndicatorEl.textContent = `${t('statCarouselIndicatorText')} ${currentCategoryStatIndex + 1} / ${categoryStatKeys.length}`;
-
         prevStatBtn.disabled = currentCategoryStatIndex === 0;
         nextStatBtn.disabled = currentCategoryStatIndex === categoryStatKeys.length - 1;
     }
 
-    prevStatBtn.addEventListener('click', () => {
-        if (currentCategoryStatIndex > 0) {
-            currentCategoryStatIndex--;
-            displayCurrentCategoryStat();
-        }
-    });
+    prevStatBtn.addEventListener('click', () => { if (currentCategoryStatIndex > 0) { currentCategoryStatIndex--; displayCurrentCategoryStat(); }});
+    nextStatBtn.addEventListener('click', () => { if (currentCategoryStatIndex < categoryStatKeys.length - 1) { currentCategoryStatIndex++; displayCurrentCategoryStat(); }});
 
-    nextStatBtn.addEventListener('click', () => {
-        if (currentCategoryStatIndex < categoryStatKeys.length - 1) {
-            currentCategoryStatIndex++;
-            displayCurrentCategoryStat();
-        }
-    });
-
-    function finishTest(isNewCompletion) {
-        questionContainer.style.display = 'none';
-        progressInfoDisplayEl.style.display = 'none';
-        confirmAnswerBtn.style.display = 'none';
-        nextQuestionBtn.style.display = 'none';
-
-        testResultsArea.style.display = 'block';
-        resultsListEl.innerHTML = '';
+    async function finishTest(isNewCompletion) {
+        questionContainer.style.display = 'none'; progressInfoDisplayEl.style.display = 'none';
+        confirmAnswerBtn.style.display = 'none'; nextQuestionBtn.style.display = 'none';
+        testResultsArea.style.display = 'block'; resultsListEl.innerHTML = '';
 
         let correctCount = 0;
         userAnswers.forEach(ans => {
@@ -658,20 +601,45 @@
             const listItem = document.createElement('li');
             const questionTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
             let qTextInCurrentLang = ans[questionTextKey] || ans['text_sk'];
-
             if (qTextInCurrentLang.startsWith("MC:")) qTextInCurrentLang = qTextInCurrentLang.substring(3).split("---")[0].trim();
             else if (qTextInCurrentLang.startsWith("WA:")) qTextInCurrentLang = qTextInCurrentLang.substring(3).trim();
-
-            listItem.innerHTML = `
-                    <strong>${t('questionTextLabel')}</strong> ${qTextInCurrentLang}<br>
-                    <strong>${t('yourAnswerLabel')}</strong> ${ans.answer_given} ${ans.is_correct ? `<span style="color:green;">${t('correctTag')}</span>` : `<span style="color:red;">${t('incorrectTag')}</span>`}<br>
-                    ${!ans.is_correct ? `<strong>${t('correctAnswerLabel')}</strong> <span class="correct-answer-display">${ans.correct_answer}</span><br>` : ''}
-                    <strong>${t('timeLabel')}</strong> ${ans.time_taken}${t('secondsSuffix')}
-                `;
+            listItem.innerHTML = `<strong>${t('questionTextLabel')}</strong> ${qTextInCurrentLang}<br><strong>${t('yourAnswerLabel')}</strong> ${ans.answer_given} ${ans.is_correct ? `<span style="color:green;">${t('correctTag')}</span>` : `<span style="color:red;">${t('incorrectTag')}</span>`}<br>${!ans.is_correct ? `<strong>${t('correctAnswerLabel')}</strong> <span class="correct-answer-display">${ans.correct_answer}</span><br>` : ''}<strong>${t('timeLabel')}</strong> ${ans.time_taken}${t('secondsSuffix')}`;
             resultsListEl.appendChild(listItem);
         });
-
         resultsSummaryEl.innerHTML = `<p><strong>${t('totalScore')} ${correctCount} ${t('of')} ${allQuestions.length} ${t('questionsSuffix')}.</strong></p>`;
+
+        if (currentUserApiToken && currentUserId && userAnswers.length > 0) {
+            const questionsForApi = userAnswers.map(ans => ({
+                question_id: ans.question_id, answered_correctly: ans.is_correct,
+                time_taken: parseFloat(ans.time_taken)
+            }));
+            const location = await getUserLocation(); // Získanie lokality
+            const testDataPayload = {
+                // user_id: parseInt(currentUserId), // Predpokladáme, že backend získa z tokenu
+                city: location.city, country: location.country,
+                questions: questionsForApi
+            };
+            if (currentTestId) {
+            }
+
+            try {
+                console.log("Odosielam výsledky testu:", JSON.stringify(testDataPayload, null, 2));
+                const storeTestResponse = await fetch(apiBase + 'tests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentUserApiToken },
+                    body: JSON.stringify(testDataPayload)
+                });
+                const storeTestData = await storeTestResponse.json();
+                if (storeTestResponse.ok && storeTestData.test_id) { // storeTest by mal vrátiť test_id
+                    console.log(t('testResultsSaved'), storeTestData);
+                    // Tu môžeme pridať vizuálnu notifikáciu používateľovi
+                } else {
+                    console.error(t('errorSavingTestResults'), storeTestData.error || storeTestData.message || 'Neznáma chyba API');
+                }
+            } catch (storeError) {
+                console.error(t('errorCommunicationSavingTest'), storeError);
+            }
+        } else if (userAnswers.length > 0) { console.log(t('notLoggedInNoSave')); }
 
         areaStatsGlobal = {};
         if (allQuestions.length > 0) {
@@ -679,24 +647,19 @@
                 const questionDetails = allQuestions.find(q => q.id === ans.question_id);
                 if (questionDetails && questionDetails.area) {
                     const area = questionDetails.area;
-                    if (!areaStatsGlobal[area]) {
-                        areaStatsGlobal[area] = { correct: 0, total: 0, questionsToReviseText: [] };
-                    }
+                    if (!areaStatsGlobal[area]) { areaStatsGlobal[area] = { correct: 0, total: 0, questionsToReviseText: [] };}
                     areaStatsGlobal[area].total++;
-                    if (ans.is_correct) {
-                        areaStatsGlobal[area].correct++;
-                    } else {
-                        const questionTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
-                        let qText = questionDetails[questionTextKey] || questionDetails['text_sk'];
+                    if (ans.is_correct) { areaStatsGlobal[area].correct++; }
+                    else {
+                        const qTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
+                        let qText = questionDetails[qTextKey] || questionDetails['text_sk'];
                         if (qText.startsWith("MC:")) qText = qText.substring(3).split("---")[0].trim();
                         else if (qText.startsWith("WA:")) qText = qText.substring(3).trim();
-                        let shortQText = qText.length > 70 ? qText.substring(0, 67) + "..." : qText;
-                        areaStatsGlobal[area].questionsToReviseText.push(shortQText);
+                        areaStatsGlobal[area].questionsToReviseText.push(qText.length > 70 ? qText.substring(0, 67) + "..." : qText);
                     }
                 }
             });
         }
-
         categoryStatKeys = Object.keys(areaStatsGlobal);
         if (categoryStatKeys.length > 0) {
             currentCategoryStatIndex = 0;
@@ -715,7 +678,27 @@
         }
     }
 
+    toggleLangBtn.addEventListener('click', () => {
+        currentLanguage = currentLanguage === 'sk' ? 'en' : 'sk';
+        localStorage.setItem('mathTestLanguageHomepage', currentLanguage);
+        updateUIText();
+
+        const isQuestionVisible = questionContainer.style.display === 'block';
+        const areResultsVisible = testResultsArea.style.display === 'block';
+
+        if (isQuestionVisible && !areResultsVisible && allQuestions.length > 0 && currentQuestionIndex < allQuestions.length) {
+            displayQuestion();
+        } else if (areResultsVisible) {
+            finishTest(false);
+        }
+    });
+
+    // Inicializácia pri načítaní stránky testu
+    currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk'; // Načítanie jazyka
+    currentUserApiToken = localStorage.getItem('apiToken');
+    currentUserId = localStorage.getItem('userId'); // Načítame user_id
     updateUIText();
+
 </script>
 </body>
 </html>

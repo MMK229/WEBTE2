@@ -255,6 +255,30 @@ paths:
                     example: abc123token
         '401':
           description: Neplatné meno alebo heslo
+  /skuska/api/api.php?route=token/refresh:
+    post:
+      tags: [Autentifikácia]
+      summary: Znovuvygenerovanie API tokenu
+      operationId: refreshToken
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Nový token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Token aktualizovaný
+                  api_token:
+                    type: string
+                    example: novyTokenABC123
+        '401':
+          description: Neautorizovaný
+
 
 components:
   securitySchemes:

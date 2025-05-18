@@ -2,7 +2,7 @@
 if ($_SERVER['HTTP_ORIGIN'] === 'https://node119.webte.fei.stuba.sk') {
     header('Access-Control-Allow-Origin: https://node119.webte.fei.stuba.sk');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With'); 
 
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(200);
@@ -145,7 +145,23 @@ switch ($method) {
             echo json_encode($response);
             break;
 
+        } elseif ($route[0] === 'token' && $route[1] === 'refresh') {
+            $user_id = $auth->authenticate(getallheaders());
+            if (!$user_id) {
+                http_response_code(401);
+                echo json_encode(["error" => "Neautorizovaný"]);
+                break;
+            }
+
+            $token = getallheaders()['Authorization'] ?? '';
+            $token = trim(str_replace('Bearer', '', $token));
+            $newToken = $auth->regenerateToken($token);
+
+            http_response_code(200);
+            echo json_encode($newToken);
+            break;
         }
+
 
 
         http_response_code(400);

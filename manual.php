@@ -296,11 +296,11 @@
             testProcessMCType: "<strong>Multiple Choice (MC):</strong> Vyberte jednu správnu odpoveď kliknutím. Vybraná možnosť sa farebne označí.",
             testProcessWAType: "<strong>Written Answer (WA):</strong> Vpíšte odpoveď do textového poľa.",
             testProcessConfirmHeading: "Potvrdenie odpovede:",
-            testProcessConfirmText: "Kliknite na <strong>confirmBtnTestpage</strong>. Bez odpovede sa zobrazí upozornenie.",
+            testProcessConfirmText: "Kliknite na <strong>Potvrdiť</strong>. Bez odpovede sa zobrazí upozornenie.",
             testProcessFeedbackHeading: "Spätná väzba:",
             testProcessFeedbackText: "Po potvrdení sa odpoveď vyhodnotí (správnosť, čas). <strong>MC:</strong> Vaša voľba sa odlíši (zelená/červená). Pri nesprávnej sa zvýrazní správna. <strong>WA:</strong> Textové pole sa odlíši. Pri nesprávnej sa zobrazí správna odpoveď.",
             testProcessNextQHeading: "Ďalšia otázka:",
-            testProcessNextQText: "Kliknite na <strong>nextBtnTestpage</strong> pre pokračovanie.",
+            testProcessNextQText: "Kliknite na <strong>Ďalšia Otázka</strong> pre pokračovanie.",
 
             resultsHeading: "Výsledky Testu",
             resultsText1: "Po zodpovedaní všetkých otázok sa zobrazia výsledky.",
@@ -317,16 +317,15 @@
             resultsListOfAnswersText3: "Pri nesprávnej odpovedi aj správna.",
             resultsListOfAnswersText4: "Čas odpovede.",
             resultsSaveText: "Ak ste prihlásený a test inicializovaný, výsledky sa uložia do profilu (zobrazí sa správa).",
-            resultsNextButton: "Po výsledkoch sa objaví tlačidlo <strong>startNewTestBtnResultspage</strong>.",
+            resultsNextButton: "Po výsledkoch sa objaví tlačidlo <strong>Výsledky</strong>.",
 
             profileHeading: "Používateľský Profil",
-            profileText1: "Pre prístup k profilu buďte prihlásený a kliknite na <strong>profileLinkHomepage</strong>.",
+            profileText1: "Pre prístup k profilu buďte prihlásený a kliknite na <strong>Môj Profil</strong>.",
             profileContainsHeading: "V profile nájdete:",
             profileUserInfo: "<strong>Informácie o používateľovi:</strong> Vaše meno.",
-            profileApiToken: "<strong>Môj API Token:</strong> Váš API token (čiastočne skrytý). Tlačidlami <strong>showTokenBtnProfile</strong> / <strong>hideTokenBtnProfile</strong> ho zobrazíte/skryjete.",
-            profileRegenerateToken: "Tlačidlom <strong>regenerateTokenBtnProfile</strong> vygenerujete nový (starý prestane platiť).",
+            profileApiToken: "<strong>Môj API Token:</strong> Váš API token (čiastočne skrytý). Tlačidlami <strong>Ukázať Token</strong> / <strong>Skryť Token</strong> ho zobrazíte/skryjete.",
+            profileRegenerateToken: "Tlačidlom <strong>Pregenerovať API Token</strong> vygenerujete nový (starý prestane platiť).",
             profileTestHistory: "<strong>História mojich testov:</strong> Zoznam vašich serverom uložených testov. Každý test: dátum, čas, celkové skóre.",
-            profileViewDetails: "Tlačidlo <strong>viewDetailsBtnProfile</strong> otvorí modálne okno s detailmi testu (otázky, odpovede, správnosť, čas).",
             profileHistoryEmpty: "Ak história nie je implementovaná alebo je prázdna, zobrazí sa správa.",
 
             langChangeHeading: "Zmena Jazyka",
@@ -377,11 +376,11 @@
             testProcessMCType: "<strong>Multiple Choice (MC):</strong> Select one correct answer by clicking on it. The selected option will be highlighted.",
             testProcessWAType: "<strong>Written Answer (WA):</strong> Type your answer into the text field.",
             testProcessConfirmHeading: "Confirming an Answer:",
-            testProcessConfirmText: "Click the <strong>confirmBtnTestpage</strong> button. If no answer is provided, a warning will be displayed.",
+            testProcessConfirmText: "Click the <strong>Confirm</strong> button. If no answer is provided, a warning will be displayed.",
             testProcessFeedbackHeading: "Feedback:",
             testProcessFeedbackText: "After confirmation, the answer is evaluated (correctness, time). For <strong>MC:</strong> Your choice will be distinguished (green/red). If incorrect, the correct answer will be highlighted. For <strong>WA:</strong> The text field will be distinguished. If incorrect, the correct answer will be displayed.",
             testProcessNextQHeading: "Next Question:",
-            testProcessNextQText: "Click the <strong>nextBtnTestpage</strong> button to continue.",
+            testProcessNextQText: "Click the <strong>Next Question</strong> button to continue.",
 
             resultsHeading: "Test Results",
             resultsText1: "After answering all questions, the results will be displayed.",
@@ -398,16 +397,15 @@
             resultsListOfAnswersText3: "If incorrect, the correct answer will also be shown.",
             resultsListOfAnswersText4: "Response time.",
             resultsSaveText: "If you are logged in and the test was initialized, the results will be saved to your profile (a message will be displayed).",
-            resultsNextButton: "After the results, the <strong>startNewTestBtnResultspage</strong> button will appear.",
+            resultsNextButton: "After the results, the <strong>Results</strong> button will appear.",
 
             profileHeading: "User Profile",
-            profileText1: "To access your profile, be logged in and click <strong>profileLinkHomepage</strong>.",
+            profileText1: "To access your profile, be logged in and click <strong>My Profile</strong>.",
             profileContainsHeading: "In your profile, you will find:",
             profileUserInfo: "<strong>User Information:</strong> Your name.",
-            profileApiToken: "<strong>My API Token:</strong> Your API token (partially hidden). Use the <strong>showTokenBtnProfile</strong> / <strong>hideTokenBtnProfile</strong> buttons to show/hide it.",
-            profileRegenerateToken: "Use the <strong>regenerateTokenBtnProfile</strong> button to generate a new one (the old one will become invalid).",
+            profileApiToken: "<strong>My API Token:</strong> Your API token (partially hidden). Use the <strong>Show Token</strong> / <strong>Hide Token</strong> buttons to show/hide it.",
+            profileRegenerateToken: "Use the <strong>Regenerate Token</strong> button to generate a new one (the old one will become invalid).",
             profileTestHistory: "<strong>My Test History:</strong> A list of your tests saved on the server. Each test: date, time, overall score.",
-            profileViewDetails: "The <strong>viewDetailsBtnProfile</strong> button opens a modal window with test details (questions, answers, correctness, time).",
             profileHistoryEmpty: "If history is not implemented or is empty, a message will be displayed.",
 
             langChangeHeading: "Language Change",
@@ -556,21 +554,15 @@
                 filename: pdfFileName,
                 image: { type: 'jpeg', quality: 0.95 },
                 html2canvas: {
-                    scale: 1.5, // Môžete skúsiť aj 1 alebo 2
+                    scale: 1.5,
                     useCORS: true,
                     logging: true,
-                    letterRendering: true, // Otestujte s `true` aj `false`
+                    letterRendering: false,
+                    x: 0,
+                    y: 0,
 
-                    // Explicitne nastavíme počiatočné súradnice zachytávania
-                    x: 0, // Začať zachytávanie od ľavého okraja elementu
-                    y: 0, // Začať zachytávanie od horného okraja elementu (po window.scrollTo(0,0))
-
-                    // Explicitne nastavíme rozmery canvasu na plné rozmery elementu.
-                    // Toto je kľúčové pre zachytenie celého obsahu.
                     width: element.scrollWidth,
-                    height: element.scrollHeight,
-
-                    // Nastavenie "okna" pre html2canvas, aby zodpovedalo plným rozmerom elementu
+                    height: element.scrollHeight + 500,
                     windowWidth: element.scrollWidth,
                     windowHeight: element.scrollHeight,
                 },

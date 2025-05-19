@@ -4,11 +4,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matematický Test</title>
 
-    <!--
-    *****      ****
-    STYLE ZAČÍNA TU
-    *****      ****
-    -->
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; padding: 20px; line-height: 1.5; }
         .top-bar { display: flex; justify-content: flex-end; margin-bottom: 15px; padding-right: 20px; }
@@ -17,7 +12,8 @@
         .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #343a40; margin-bottom: 25px; font-weight: 500;}
         .question-container { border: 1px solid #dee2e6; padding: 20px; margin-bottom: 20px; background-color: #ffffff; border-radius: 5px;}
-        .question-text { font-size: 1.25em; margin-bottom: 20px; min-height: 40px; line-height: 1.6; color: #495057; }
+        .question-text { font-size: 1.25em; margin-bottom: 10px; min-height: 40px; line-height: 1.6; color: #495057; }
+        .question-category-text { font-size: 0.9em; color: #6c757d; margin-bottom: 15px; font-style: italic; }
         .answer-section-wa label { display: block; margin-bottom: 8px; font-weight: 500; color: #495057; }
         .answer-input { width: 100%; padding: 10px; margin-bottom:15px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 1em;}
 
@@ -89,6 +85,8 @@
         .feedback { margin-top: 20px; font-style: normal; padding: 12px; border-radius: 4px; text-align: center; line-height: 1.6; font-size: 0.95em;}
         .feedback.correct { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
         .feedback.incorrect { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .feedback.info { background-color: #cfe2ff; color: #084298; border: 1px solid #b6d4fe;}
+
 
         #test-results-area { padding: 20px; margin-top: 20px; background-color: #ffffff; border-radius: 5px; }
         #test-results-area h2 { text-align: center; margin-bottom: 20px; font-weight: 500; }
@@ -139,20 +137,70 @@
             color: #0f5132; font-weight: 500; margin-top: 8px; font-size: 0.95em;
         }
         .answer-section-wa, .mc-options-container, .submit-btn, .next-question-btn { display: none; }
+
+        /* Štýly pre modálne okno */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000; /* Malo by byť nad ostatným obsahom */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Polopriehľadné pozadie */
+            padding-top: 60px; /* Odsadenie zhora */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* Centrovanie a odsadenie */
+            padding: 25px 30px;
+            border: 1px solid #888;
+            width: 90%; /* Šírka pre menšie obrazovky */
+            max-width: 500px; /* Maximálna šírka */
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-content h3 { /* Titulok v modálnom okne */
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #343a40;
+        }
+        .modal-content p { /* Text v modálnom okne */
+            margin-bottom: 25px;
+            font-size: 1em;
+            line-height: 1.6;
+            text-align: center; /* Centrovanie textu varovania */
+        }
+        .modal .button-group { /* Skupina tlačidiel v modále */
+            display: flex;
+            justify-content: flex-end; /* Tlačidlá napravo */
+            gap: 10px; /* Medzera medzi tlačidlami */
+        }
+        .modal .action-btn { /* Tlačidlá v modále */
+            min-width: 100px;
+        }
+        .modal .action-btn.secondary-action { /* Špeciálny štýl pre "Cancel" tlačidlo */
+            background-color: #6c757d;
+            color: white;
+        }
+        .modal .action-btn.secondary-action:hover:not(:disabled) {
+            background-color: #5a6268;
+        }
+
     </style>
 
-    <!--
-    *****      ****
-    HTML  ZAČÍNA TU
-    *****      ****
-    -->
 </head>
 <body>
 <div class="top-bar">
     <button id="toggle-lang-btn" class="lang-btn">English</button>
 </div>
 <div class="container">
-    <h1 id="main-title-test">Matematický Test</h1> <div class="attempt-info" id="attempt-info-display" style="display: none;"></div>
+    <h1 id="main-title-test">Matematický Test</h1>
+    <div class="attempt-info" id="attempt-info-display" style="display: none;"></div>
     <div class="progress-info" id="progress-info-display" style="display: none;">
         <span id="question-label">Otázka</span> <span id="current-question-number">0</span> <span id="of-label">z</span> <span id="total-questions">0</span>
     </div>
@@ -160,6 +208,7 @@
     <div id="test-area">
         <div class="question-container" style="display: none;">
             <div id="question-text" class="question-text">Načítavam otázku...</div>
+            <div id="question-category-display" class="question-category-text" style="display: none;"></div>
             <div class="answer-section-wa">
                 <label for="answer-input" id="your-answer-label">Vaša odpoveď:</label>
                 <input type="text" id="answer-input" class="answer-input">
@@ -190,12 +239,28 @@
     <button id="start-test-btn">Začať Test</button>
 </div>
 
+<div id="warning-modal" class="modal">
+    <div class="modal-content">
+        <h3 id="warning-modal-title"></h3>
+        <p id="warning-modal-text"></p>
+        <div class="button-group">
+            <button id="warning-cancel-btn" class="action-btn secondary-action"></button>
+            <button id="warning-confirm-btn" class="action-btn primary-action"></button>
+        </div>
+    </div>
+</div>
+
+
 <script>
     const apiBase = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
     const localStorageKeyAttempts = 'mathTestAttempts';
-    let currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk'; // Spoločný jazyk pre obe stránky
+    const localStorageKeyAnsweredQuestions = 'mathTestAnsweredQuestions';
+    const MAX_QUESTIONS_PER_TEST = 10;
 
-    let allQuestions = [];
+    let currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk';
+
+    let allQuestionsFromApi = []; // Všetky otázky načítané z API
+    let allQuestions = [];      // Otázky pre aktuálny test (max. 10)
     let currentQuestionIndex = 0;
     let userAnswers = [];
     let questionStartTime;
@@ -204,17 +269,17 @@
     let selectedMcOptionValue = null;
     let selectedMcOptionElement = null;
 
-    let currentTestId = null;       // Na uloženie ID aktuálneho testu z backendu
+    let currentTestId = null;
     let currentUserApiToken = null;
-    let currentUserId = null;       // Na uloženie ID prihláseného používateľa (ak ho máme)
-    let loggedInUsername = null;  // Pre prípadné zobrazenie mena
+    let currentUserId = null;
 
     // UI Elementy
-    const mainTitleElTest = document.getElementById('main-title-test'); // Unikátne ID pre titulok na tejto stránke
+    const mainTitleElTest = document.getElementById('main-title-test');
     const toggleLangBtn = document.getElementById('toggle-lang-btn');
     const startTestBtn = document.getElementById('start-test-btn');
     const questionContainer = document.querySelector('.question-container');
     const questionTextEl = document.getElementById('question-text');
+    const questionCategoryDisplayEl = document.getElementById('question-category-display');
     const answerSectionWA = document.querySelector('.answer-section-wa');
     const yourAnswerLabelEl = document.getElementById('your-answer-label');
     const answerInputEl = document.getElementById('answer-input');
@@ -233,6 +298,7 @@
     const resultsSummaryEl = document.getElementById('results-summary');
     const resultsListEl = document.getElementById('results-list');
     const questionFeedbackEl = document.getElementById('question-feedback');
+
     const categoryStatsTitleEl = document.getElementById('category-stats-title');
     const categoryStatsCarouselEl = document.getElementById('category-stats-carousel');
     const prevStatBtn = document.getElementById('prev-stat-btn');
@@ -240,11 +306,19 @@
     const statSlideIndicatorEl = document.getElementById('stat-slide-indicator');
     const categoryStatsSlideContentEl = document.getElementById('category-stats-slide-content');
 
+    // Elementy pre varovné modálne okno
+    const warningModal = document.getElementById('warning-modal');
+    const warningModalTitle = document.getElementById('warning-modal-title');
+    const warningModalText = document.getElementById('warning-modal-text');
+    const warningConfirmBtn = document.getElementById('warning-confirm-btn');
+    const warningCancelBtn = document.getElementById('warning-cancel-btn');
+
+
     let areaStatsGlobal = {};
     let categoryStatKeys = [];
     let currentCategoryStatIndex = 0;
 
-    const uiStrings = { // Rovnaké uiStrings ako predtým, pre konzistenciu
+    const uiStrings = {
         sk: {
             pageTitleTest: "Test z Matematiky", mainTitleTest: "Matematický Test",
             startTest: "Začať Test", loadingTest: "Načítavam...", loadingQuestions: "Načítavam otázky...",
@@ -266,7 +340,16 @@
             notLoggedInNoSave: "Používateľ nie je prihlásený, test nebude ukladaný na server.",
             testResultsSaved: "Výsledky testu úspešne uložené na server.",
             errorSavingTestResults: "Nepodarilo sa uložiť výsledky testu na server.",
-            errorCommunicationSavingTest: "Chyba komunikácie pri ukladaní výsledkov testu."
+            errorCommunicationSavingTest: "Chyba komunikácie pri ukladaní výsledkov testu.",
+            categoryLabel: "Kategória:",
+            uncategorizedArea: "Neurčená kategória",
+            warningModalTitle: "Upozornenie",
+            warningConfirmBtn: "Pokračovať",
+            warningCancelBtn: "Zrušiť",
+            warningRepeatingQuestionsAll: `Všetky dostupné otázky už boli zodpovedané. Test bude obsahovať ${MAX_QUESTIONS_PER_TEST} opakovaných otázok. Prajete si pokračovať?`,
+            warningRepeatingQuestionsPartial: `Nie je dostatok nových otázok na zostavenie testu (${MAX_QUESTIONS_PER_TEST} otázok). Prajete si doplniť test o už zodpovedané otázky?`,
+            noQuestionsWillingly: "Test nemôže začať, pretože neboli vybrané žiadne otázky podľa vašej voľby.",
+            noNewQuestionsAvailable: "Momentálne nie sú k dispozícii žiadne nové otázky, ktoré by ste ešte nezodpovedali."
         },
         en: {
             pageTitleTest: "Mathematics Test", mainTitleTest: "Mathematics Test",
@@ -289,7 +372,16 @@
             notLoggedInNoSave: "User not logged in, test results will not be saved to the server.",
             testResultsSaved: "Test results successfully saved to the server.",
             errorSavingTestResults: "Failed to save test results to the server.",
-            errorCommunicationSavingTest: "Communication error when saving test results."
+            errorCommunicationSavingTest: "Communication error when saving test results.",
+            categoryLabel: "Category:",
+            uncategorizedArea: "Uncategorized",
+            warningModalTitle: "Warning",
+            warningConfirmBtn: "Continue",
+            warningCancelBtn: "Cancel",
+            warningRepeatingQuestionsAll: `All available questions have been answered. The test will contain ${MAX_QUESTIONS_PER_TEST} repeated questions. Do you wish to continue?`,
+            warningRepeatingQuestionsPartial: `Not enough new questions to make a test of ${MAX_QUESTIONS_PER_TEST} questions. Do you want to fill the test with previously answered questions?`,
+            noQuestionsWillingly: "The test cannot start as no questions were selected based on your choice.",
+            noNewQuestionsAvailable: "There are currently no new questions available that you haven't answered yet."
         }
     };
 
@@ -312,6 +404,14 @@
         if (categoryStatsCarouselEl.style.display !== 'none') {
             categoryStatsTitleEl.textContent = t('categoryStatsTitle');
         }
+        // Dynamické texty pre warning modál (ak by sa menili počas zobrazenia, čo nie je bežné)
+        // warningConfirmBtn a warningCancelBtn texty sa nastavujú pri zobrazení modálu
+        // Texty pre warningRepeatingQuestionsAll/Partial sa aktualizujú tu, aby mali správny MAX_QUESTIONS_PER_TEST
+        uiStrings.sk.warningRepeatingQuestionsAll = `Všetky dostupné otázky už boli zodpovedané. Test bude obsahovať ${MAX_QUESTIONS_PER_TEST} opakovaných otázok. Prajete si pokračovať?`;
+        uiStrings.sk.warningRepeatingQuestionsPartial = `Nie je dostatok nových otázok na zostavenie testu (${MAX_QUESTIONS_PER_TEST} otázok). Prajete si doplniť test o už zodpovedané otázky?`;
+        uiStrings.en.warningRepeatingQuestionsAll = `All available questions have been answered. The test will contain ${MAX_QUESTIONS_PER_TEST} repeated questions. Do you wish to continue?`;
+        uiStrings.en.warningRepeatingQuestionsPartial = `Not enough new questions to make a test of ${MAX_QUESTIONS_PER_TEST} questions. Do you want to fill the test with previously answered questions?`;
+
     }
 
     function getUserLocation() {
@@ -320,94 +420,223 @@
         });
     }
 
-
     function loadTestAttempts() { return localStorage.getItem(localStorageKeyAttempts) ? parseInt(localStorage.getItem(localStorageKeyAttempts)) : 0; }
     function saveTestAttempts(attempts) { localStorage.setItem(localStorageKeyAttempts, attempts); }
 
+    function loadAnsweredQuestionIds() {
+        const stored = localStorage.getItem(localStorageKeyAnsweredQuestions);
+        return stored ? new Set(JSON.parse(stored).map(String)) : new Set();
+    }
+
+    function saveAnsweredQuestionIds(answeredIdsSet) {
+        localStorage.setItem(localStorageKeyAnsweredQuestions, JSON.stringify(Array.from(answeredIdsSet)));
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function showAsyncWarningModal(message, title) {
+        return new Promise((resolve) => {
+            const confirmButtonInModal = document.getElementById('warning-confirm-btn');
+            const cancelButtonInModal = document.getElementById('warning-cancel-btn');
+
+            warningModalTitle.textContent = title;
+            warningModalText.textContent = message;
+            confirmButtonInModal.textContent = t('warningConfirmBtn');
+            cancelButtonInModal.textContent = t('warningCancelBtn');
+            const confirmClickHandler = () => {
+                warningModal.style.display = 'none';
+                confirmButtonInModal.removeEventListener('click', confirmClickHandler);
+                cancelButtonInModal.removeEventListener('click', cancelClickHandler);
+                resolve(true);
+            };
+
+            const cancelClickHandler = () => {
+                warningModal.style.display = 'none';
+                confirmButtonInModal.removeEventListener('click', confirmClickHandler);
+                cancelButtonInModal.removeEventListener('click', cancelClickHandler);
+                resolve(false);
+            };
+
+            const newConfirmBtn = confirmButtonInModal.cloneNode(true); // Klonujeme text tlačidla tiež
+            confirmButtonInModal.parentNode.replaceChild(newConfirmBtn, confirmButtonInModal);
+
+            const newCancelBtn = cancelButtonInModal.cloneNode(true); // Klonujeme text tlačidla tiež
+            cancelButtonInModal.parentNode.replaceChild(newCancelBtn, cancelButtonInModal);
+            newConfirmBtn.addEventListener('click', confirmClickHandler);
+            newCancelBtn.addEventListener('click', cancelClickHandler);
+            warningModal.style.display = 'block';
+        });
+    }
+
+
     startTestBtn.addEventListener('click', async () => {
         startTestBtn.disabled = true;
-        startTestBtn.textContent = t('loadingTest');
-        questionFeedbackEl.style.display = 'none'; // Skryť staré feedbacky
-        questionContainer.style.display = 'block';
-        answerSectionWA.style.display = 'none';
-        mcOptionsContainer.style.display = 'none';
-        confirmAnswerBtn.style.display = 'none';
-        nextQuestionBtn.style.display = 'none';
-        categoryStatsCarouselEl.style.display = 'none';
-        categoryStatsTitleEl.style.display = 'none';
-        categoryStatsSlideContentEl.innerHTML = '';
+        startTestBtn.textContent = t('loadingQuestions');
+        questionFeedbackEl.style.display = 'none';
+        questionFeedbackEl.className = 'feedback';
 
         currentUserApiToken = localStorage.getItem('apiToken');
-        currentUserId = localStorage.getItem('userId'); // Načítame userId
+        currentUserId = localStorage.getItem('userId'); // Načítame userId pre prípadné použitie
 
         try {
-            const response = await fetch(apiBase + 'questions');
-            if (!response.ok) throw new Error(`${t('errorLoadingQuestions')} Status: ${response.status}`);
-            allQuestions = await response.json();
+            if (allQuestionsFromApi.length === 0) {
+                const response = await fetch(apiBase + 'questions');
+                if (!response.ok) throw new Error(`${t('errorLoadingQuestions')} Status: ${response.status}`);
+                allQuestionsFromApi = await response.json();
+            }
 
-            if (allQuestions && allQuestions.length > 0) {
-                currentTestId = null;
+            if (!allQuestionsFromApi || allQuestionsFromApi.length === 0) {
+                questionFeedbackEl.textContent = t('noQuestions');
+                questionFeedbackEl.className = 'feedback info';
+                questionFeedbackEl.style.display = 'block';
+                startTestBtn.disabled = false;
+                startTestBtn.textContent = t('startTest');
+                return;
+            }
 
-                if (currentUserApiToken && currentUserId) {
-                    const location = await getUserLocation(); // Získanie lokality
-                    try {
-                        const startTestResponse = await fetch(apiBase + 'tests/start', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + currentUserApiToken
-                            },
-                            body: JSON.stringify({ city: location.city, country: location.country })
-                        });
-                        const startTestData = await startTestResponse.json();
-                        if (startTestResponse.ok && startTestData.test_id) {
-                            currentTestId = startTestData.test_id;
-                            console.log('Test inicializovaný s ID:', currentTestId);
+            let answeredQuestionIds = loadAnsweredQuestionIds();
+            let uniqueQuestions = allQuestionsFromApi.filter(q => !answeredQuestionIds.has(String(q.id)));
+            let questionsForThisTest = [];
+
+            if (uniqueQuestions.length >= MAX_QUESTIONS_PER_TEST) {
+                shuffleArray(uniqueQuestions);
+                questionsForThisTest = uniqueQuestions.slice(0, MAX_QUESTIONS_PER_TEST);
+            } else {
+                if (uniqueQuestions.length > 0) {
+                    shuffleArray(uniqueQuestions);
+                    questionsForThisTest.push(...uniqueQuestions);
+                }
+
+                const remainingNeeded = MAX_QUESTIONS_PER_TEST - questionsForThisTest.length;
+                if (remainingNeeded > 0) {
+                    let needsWarning = false;
+                    let warningMessageKey = '';
+
+                    if (uniqueQuestions.length === 0 && allQuestionsFromApi.length > 0 && answeredQuestionIds.size >= allQuestionsFromApi.length) {
+                        needsWarning = true;
+                        warningMessageKey = 'warningRepeatingQuestionsAll';
+                    } else if (questionsForThisTest.length < MAX_QUESTIONS_PER_TEST && allQuestionsFromApi.length > questionsForThisTest.length && allQuestionsFromApi.length > uniqueQuestions.length) {
+                        needsWarning = true;
+                        warningMessageKey = 'warningRepeatingQuestionsPartial';
+                    }
+
+                    if (needsWarning) {
+                        const userConfirmed = await showAsyncWarningModal(t(warningMessageKey), t('warningModalTitle'));
+                        if (userConfirmed) {
+                            let poolForRepetition = allQuestionsFromApi.filter(q =>
+                                !questionsForThisTest.map(qt => String(qt.id)).includes(String(q.id))
+                            );
+                            shuffleArray(poolForRepetition);
+                            questionsForThisTest.push(...poolForRepetition.slice(0, remainingNeeded));
                         } else {
-                            console.error('Nepodarilo sa inicializovať test na backende:', startTestData.error || startTestData.message || 'Neznáma chyba');
-                            questionFeedbackEl.textContent = t('errorInitializingTest') + ` (${startTestData.error || startTestData.message})`;
-                            questionFeedbackEl.className = 'feedback error';
-                            questionFeedbackEl.style.display = 'block';
+                            if (questionsForThisTest.length === 0) {
+                                questionFeedbackEl.textContent = t('noQuestionsWillingly');
+                                questionFeedbackEl.className = 'feedback info';
+                                questionFeedbackEl.style.display = 'block';
+                                startTestBtn.disabled = false;
+                                startTestBtn.textContent = t('startTest');
+                                questionContainer.style.display = 'none';
+                                return;
+                            }
                         }
-                    } catch (initError) {
-                        console.error('Chyba pri komunikácii pre inicializáciu testu:', initError);
-                        questionFeedbackEl.textContent = t('errorCommunicationInitializingTest');
+                    } else if (remainingNeeded > 0) { // Automaticky doplniť ak varovanie nebolo potrebné
+                        let poolForCompletion = allQuestionsFromApi.filter(q =>
+                            !questionsForThisTest.map(qt => String(qt.id)).includes(String(q.id))
+                        );
+                        shuffleArray(poolForCompletion);
+                        questionsForThisTest.push(...poolForCompletion.slice(0, remainingNeeded));
+                    }
+                }
+            }
+
+            // Deduplikácia a finálna kontrola
+            const finalQuestionIds = new Set();
+            allQuestions = questionsForThisTest.filter(q => {
+                if (q && q.id && !finalQuestionIds.has(String(q.id))) { // Kontrola, či q a q.id existujú
+                    finalQuestionIds.add(String(q.id));
+                    return true;
+                }
+                return false;
+            });
+
+
+            if (allQuestions.length === 0) {
+                questionFeedbackEl.textContent = (uniqueQuestions.length === 0 && answeredQuestionIds.size > 0 && answeredQuestionIds.size >= allQuestionsFromApi.length) ? t('noNewQuestionsAvailable') : t('noQuestions');
+                questionFeedbackEl.className = 'feedback info';
+                questionFeedbackEl.style.display = 'block';
+                startTestBtn.disabled = false;
+                startTestBtn.textContent = t('startTest');
+                questionContainer.style.display = 'none';
+                return;
+            }
+
+            currentTestId = null;
+            if (currentUserApiToken && currentUserId) { // Stále kontrolujeme currentUserId pre logiku klienta
+                const location = await getUserLocation();
+                try {
+                    // Predpokladáme, že API (/tests/start) berie user_id z tokenu, nie z tela
+                    const startTestResponse = await fetch(apiBase + 'tests/start', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + currentUserApiToken
+                        },
+                        body: JSON.stringify({ city: location.city, country: location.country }) // Bez user_id v tele
+                    });
+                    const startTestData = await startTestResponse.json();
+                    if (startTestResponse.ok && startTestData.test_id) {
+                        currentTestId = startTestData.test_id;
+                        console.log('Test inicializovaný s ID:', currentTestId);
+                        questionFeedbackEl.style.display = 'none'; // Skryť predchádzajúce info správy
+                    } else {
+                        console.error('Nepodarilo sa inicializovať test na backende:', startTestData.error || startTestData.message || 'Neznáma chyba API');
+                        questionFeedbackEl.textContent = t('errorInitializingTest') + ` (${startTestData.error || startTestData.message || ''})`;
                         questionFeedbackEl.className = 'feedback error';
                         questionFeedbackEl.style.display = 'block';
                     }
-                } else {
-                    console.log(t('notLoggedInNoSave'));
-                    // Zobraziť informatívnu správu, že test nebude uložený
-                    questionFeedbackEl.textContent = t('notLoggedInNoSave');
-                    questionFeedbackEl.className = 'feedback'; // neutrálny štýl
+                } catch (initError) {
+                    console.error('Chyba pri komunikácii pre inicializáciu testu:', initError);
+                    questionFeedbackEl.textContent = t('errorCommunicationInitializingTest');
+                    questionFeedbackEl.className = 'feedback error';
                     questionFeedbackEl.style.display = 'block';
                 }
-
-                testAttemptNumber = loadTestAttempts() + 1;
-                saveTestAttempts(testAttemptNumber);
-                attemptInfoDisplayEl.textContent = `${t('yourAttempt')} ${testAttemptNumber}.`;
-                attemptInfoDisplayEl.style.display = 'block';
-                currentQuestionIndex = 0;
-                userAnswers = [];
-                totalQuestionsEl.textContent = allQuestions.length;
-                startTestBtn.style.display = 'none';
-                testResultsArea.style.display = 'none';
-                resultsListEl.innerHTML = '';
-                resultsSummaryEl.innerHTML = '';
-                questionContainer.style.display = 'block';
-                progressInfoDisplayEl.style.display = 'block';
-                displayQuestion();
-
             } else {
-                questionTextEl.textContent = t('noQuestions');
-                startTestBtn.disabled = false;
-                startTestBtn.textContent = t('startTest');
+                console.log(t('notLoggedInNoSave'));
+                questionFeedbackEl.textContent = t('notLoggedInNoSave');
+                questionFeedbackEl.className = 'feedback info';
+                questionFeedbackEl.style.display = 'block';
             }
+
+            testAttemptNumber = loadTestAttempts() + 1;
+            saveTestAttempts(testAttemptNumber);
+            attemptInfoDisplayEl.textContent = `${t('yourAttempt')} ${testAttemptNumber}.`;
+            attemptInfoDisplayEl.style.display = 'block';
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            totalQuestionsEl.textContent = allQuestions.length;
+            startTestBtn.style.display = 'none';
+            testResultsArea.style.display = 'none';
+            resultsListEl.innerHTML = '';
+            resultsSummaryEl.innerHTML = '';
+            questionContainer.style.display = 'block';
+            progressInfoDisplayEl.style.display = 'block';
+            categoryStatsCarouselEl.style.display = 'none';
+            categoryStatsTitleEl.style.display = 'none';
+            categoryStatsSlideContentEl.innerHTML = '';
+
+            displayQuestion();
+
         } catch (error) {
-            console.error("Error loading questions:", error);
-            questionTextEl.textContent = `${error.message}`;
+            console.error("Error loading or preparing questions:", error);
+            questionTextEl.textContent = `${error.message || t('errorLoadingQuestions')}`;
             startTestBtn.disabled = false;
             startTestBtn.textContent = t('startTest');
+            questionContainer.style.display = 'none';
         }
     });
 
@@ -420,14 +649,30 @@
             if (rawText.startsWith("MC:")) { questionType = "MC"; rawText = rawText.substring(3).trim(); }
             else if (rawText.startsWith("WA:")) { questionType = "WA"; rawText = rawText.substring(3).trim(); }
 
+            let categoryNameToDisplay;
+            if (currentLanguage === 'en' && question.area_en) {
+                categoryNameToDisplay = question.area_en;
+            } else if (currentLanguage === 'sk' && question.area) {
+                categoryNameToDisplay = question.area;
+            } else {
+                categoryNameToDisplay = question.area || question.area_en || t('uncategorizedArea');
+            }
+            questionCategoryDisplayEl.textContent = `${t('categoryLabel')} ${categoryNameToDisplay}`;
+            questionCategoryDisplayEl.style.display = 'block';
+
             selectedMcOptionValue = null; selectedMcOptionElement = null;
             mcOptionsContainer.innerHTML = '';
             answerSectionWA.style.display = 'none';
             mcOptionsContainer.style.display = 'none';
             confirmAnswerBtn.style.display = 'block';
             nextQuestionBtn.style.display = 'none';
-            if(questionFeedbackEl.classList.contains('error')) { /* No-op, nechaj error správu */ }
-            else { questionFeedbackEl.style.display = 'none'; questionFeedbackEl.textContent = ''; questionFeedbackEl.className = 'feedback';}
+
+            if(!(questionFeedbackEl.classList.contains('error') && questionFeedbackEl.textContent.startsWith(t('errorInitializingTest'))) &&
+                !(questionFeedbackEl.classList.contains('info') && questionFeedbackEl.textContent === t('notLoggedInNoSave'))) {
+                questionFeedbackEl.style.display = 'none';
+                questionFeedbackEl.textContent = '';
+                questionFeedbackEl.className = 'feedback';
+            }
 
             correctAnswerWaDisplayEl.style.display = 'none'; correctAnswerWaDisplayEl.textContent = '';
             answerInputEl.value = ''; answerInputEl.disabled = false;
@@ -480,36 +725,61 @@
         if (questionIdentifierText.startsWith("MC:")) {
             questionType = "MC";
             if (!selectedMcOptionValue) {
-                questionFeedbackEl.textContent = t('pleaseSelectAnswer');
-                questionFeedbackEl.className = 'feedback'; questionFeedbackEl.style.display = 'block'; return;
+                if (!questionFeedbackEl.textContent.startsWith(t('errorInitializingTest'))) { // Aby sa neprepisala chyba inicializacie
+                    questionFeedbackEl.textContent = t('pleaseSelectAnswer');
+                    questionFeedbackEl.className = 'feedback info'; questionFeedbackEl.style.display = 'block';
+                }
+                return;
             }
             userAnswer = selectedMcOptionValue;
         } else {
             questionType = "WA"; userAnswer = answerInputEl.value.trim();
             if (userAnswer === "") {
-                questionFeedbackEl.textContent = t('pleaseWriteAnswer');
-                questionFeedbackEl.className = 'feedback'; questionFeedbackEl.style.display = 'block'; return;
+                if (!questionFeedbackEl.textContent.startsWith(t('errorInitializingTest'))) {
+                    questionFeedbackEl.textContent = t('pleaseWriteAnswer');
+                    questionFeedbackEl.className = 'feedback info'; questionFeedbackEl.style.display = 'block';
+                }
+                return;
             }
         }
+
+        // Ak bola predtým zobrazená globálna správa (napr. o neprihlásení), skryjeme ju pred zobrazením spätnej väzby k odpovedi
+        if (questionFeedbackEl.classList.contains('info') &&
+            (questionFeedbackEl.textContent === t('notLoggedInNoSave') || questionFeedbackEl.textContent.startsWith(t('errorInitializingTest')) )) {
+            // Ponecháme tieto dôležité správy, ale ďalšia spätná väzba sa zobrazí pod nimi alebo ich nahradí, ak to tak má byť.
+            // Pre teraz, odpoveď k otázke bude prioritná.
+        }
+
 
         confirmAnswerBtn.disabled = true; answerInputEl.disabled = true;
         Array.from(mcOptionsContainer.children).forEach(btn => btn.disabled = true);
 
-        const correctAnswerNormalized = String(currentQuestion.correct_answer).trim().replace(',', '.');
+        const correctAnswerOriginal = String(currentQuestion.correct_answer).trim();
         let userAnswerNormalized = String(userAnswer).trim().replace(',', '.');
         let isCorrect = false;
 
-        if (questionType === "MC") { isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalized.toLowerCase(); }
-        else {
+        if (questionType === "MC") {
+            isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerOriginal.toLowerCase();
+        } else {
+            const correctAnswerNormalizedForWA = correctAnswerOriginal.replace(',', '.');
             const userAnswerNum = parseFloat(userAnswerNormalized);
-            const correctAnswerNum = parseFloat(correctAnswerNormalized);
-            if (!isNaN(userAnswerNum) && !isNaN(correctAnswerNum)) { isCorrect = Math.abs(userAnswerNum - correctAnswerNum) < 0.005; }
-            else { isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalized.toLowerCase(); }
+            const correctAnswerNum = parseFloat(correctAnswerNormalizedForWA);
+
+            if (!isNaN(userAnswerNum) && !isNaN(correctAnswerNum)) {
+                const userAnswerRounded = Number(userAnswerNum.toFixed(2));
+                const correctAnswerRounded = Number(correctAnswerNum.toFixed(2));
+                isCorrect = userAnswerRounded === correctAnswerRounded;
+            } else {
+                isCorrect = userAnswerNormalized.toLowerCase() === correctAnswerNormalizedForWA.toLowerCase();
+            }
         }
 
         userAnswers.push({
-            question_id: currentQuestion.id, text_sk: currentQuestion.text_sk, text_en: currentQuestion.text_en,
-            answer_given: userAnswer, time_taken: timeTaken.toFixed(2), correct_answer: currentQuestion.correct_answer, is_correct: isCorrect
+            question_id: String(currentQuestion.id),
+            text_sk: currentQuestion.text_sk, text_en: currentQuestion.text_en,
+            area: currentQuestion.area, area_en: currentQuestion.area_en, // Uložíme obe verzie kategórie
+            answer_given: userAnswer, time_taken: timeTaken.toFixed(2),
+            correct_answer: currentQuestion.correct_answer, is_correct: isCorrect
         });
 
         correctAnswerWaDisplayEl.style.display = 'none';
@@ -526,7 +796,7 @@
         } else {
             answerInputEl.classList.add(isCorrect ? 'user-correct' : 'user-incorrect');
             if (!isCorrect) {
-                correctAnswerWaDisplayEl.textContent = currentQuestion.correct_answer;
+                correctAnswerWaDisplayEl.textContent = `${currentQuestion.correct_answer}`;
                 correctAnswerWaDisplayEl.style.display = 'block';
             }
         }
@@ -534,9 +804,17 @@
         let feedbackText = `${isCorrect ? t('answerCorrect') : t('answerIncorrect')} <br>`;
         if (!isCorrect && questionType === "MC") { feedbackText += `${t('correctAnswerIs')} ${currentQuestion.correct_answer}.<br>`; }
         feedbackText += `${t('timeTaken')} ${timeTaken.toFixed(2)}${t('secondsSuffix')}`;
-        questionFeedbackEl.innerHTML = feedbackText;
+
+        // Zobraziť feedback k odpovedi. Ak bola predtým chyba inicializácie, tá zostane viditeľná.
+        if (questionFeedbackEl.classList.contains('error') && questionFeedbackEl.textContent.startsWith(t('errorInitializingTest'))) {
+            const existingError = questionFeedbackEl.innerHTML;
+            questionFeedbackEl.innerHTML = existingError + "<hr>" + feedbackText; // Pridať feedback pod chybu
+        } else {
+            questionFeedbackEl.innerHTML = feedbackText;
+        }
         questionFeedbackEl.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
         questionFeedbackEl.style.display = 'block';
+
 
         confirmAnswerBtn.style.display = 'none';
         nextQuestionBtn.style.display = 'block';
@@ -544,11 +822,44 @@
         nextQuestionBtn.focus();
     });
 
-    nextQuestionBtn.addEventListener('click', () => { currentQuestionIndex++; displayQuestion(); });
+    nextQuestionBtn.addEventListener('click', () => {
+        currentQuestionIndex++;
+        // Skryť feedback k predchádzajúcej otázke, iba ak to nebola trvalá chyba alebo info o neprihlásení
+        if (!questionFeedbackEl.classList.contains('error') && !questionFeedbackEl.classList.contains('info')) {
+            questionFeedbackEl.style.display = 'none';
+        } else if (questionFeedbackEl.classList.contains('correct') || questionFeedbackEl.classList.contains('incorrect')) {
+            // Ak to bol feedback k odpovedi (correct/incorrect), skryjeme ho.
+            // Trvalé error/info správy (napr. o inicializácii, neprihlásení) by mali zostať,
+            // alebo by sa mali explicitne manažovať, ak ich chceme skryť.
+            // Pre jednoduchosť, ak to nie je globálny error/info, skryjeme.
+            if (questionFeedbackEl.textContent.startsWith(t('answerCorrect')) || questionFeedbackEl.textContent.startsWith(t('answerIncorrect'))){
+                questionFeedbackEl.style.display = 'none';
+            }
+        }
+        displayQuestion();
+    });
 
-    function createCategoryStatElement(areaName, stats) {
+    function getDisplayedAreaName(area, area_en) {
+        let name;
+        if (currentLanguage === 'en' && area_en) {
+            name = area_en;
+        } else if (currentLanguage === 'sk' && area) {
+            name = area;
+        } else {
+            name = area || area_en || t('uncategorizedArea');
+        }
+        return name;
+    }
+
+
+    function createCategoryStatElement(areaKey, stats) { // areaKey je napr. slovenský názov
         const itemDiv = document.createElement('div'); itemDiv.classList.add('category-stat-item');
-        const titleH4 = document.createElement('h4'); titleH4.textContent = areaName; itemDiv.appendChild(titleH4);
+
+        // Nájdeme prvú otázku s týmto areaKey, aby sme získali area_en pre zobrazenie
+        const sampleQuestionForArea = allQuestionsFromApi.find(q => q.area === areaKey);
+        const areaForDisplay = getDisplayedAreaName(areaKey, sampleQuestionForArea?.area_en);
+
+        const titleH4 = document.createElement('h4'); titleH4.textContent = areaForDisplay; itemDiv.appendChild(titleH4);
         const summaryP = document.createElement('p'); summaryP.classList.add('category-stat-summary');
         summaryP.textContent = `${t('correctOutOfInArea')} ${stats.correct} ${t('of')} ${stats.total} ${t('questionsInAreaShort')}.`;
         itemDiv.appendChild(summaryP);
@@ -561,8 +872,10 @@
         if (stats.questionsToReviseText.length > 0) {
             const reviseTitleP = document.createElement('p'); reviseTitleP.innerHTML = `<strong>${t('reviseFollowing')}</strong>`; itemDiv.appendChild(reviseTitleP);
             const reviseListUl = document.createElement('ul'); reviseListUl.classList.add('revise-questions-list');
-            stats.questionsToReviseText.forEach(qText => {
-                const li = document.createElement('li'); li.textContent = qText; reviseListUl.appendChild(li);
+            stats.questionsToReviseText.forEach(qTextInfo => { // qTextInfo je teraz objekt
+                const li = document.createElement('li');
+                li.textContent = (currentLanguage === 'en' && qTextInfo.en) ? qTextInfo.en : qTextInfo.sk;
+                reviseListUl.appendChild(li);
             });
             itemDiv.appendChild(reviseListUl);
         } else if (stats.total > 0) {
@@ -578,10 +891,12 @@
         }
         categoryStatsCarouselEl.style.display = 'block'; categoryStatsTitleEl.style.display = 'block';
         categoryStatsTitleEl.textContent = t('categoryStatsTitle');
-        const currentAreaName = categoryStatKeys[currentCategoryStatIndex];
-        const stats = areaStatsGlobal[currentAreaName];
+        const currentAreaKey = categoryStatKeys[currentCategoryStatIndex];
+        const stats = areaStatsGlobal[currentAreaKey];
         categoryStatsSlideContentEl.innerHTML = '';
-        categoryStatsSlideContentEl.appendChild(createCategoryStatElement(currentAreaName, stats));
+        if (stats) {
+            categoryStatsSlideContentEl.appendChild(createCategoryStatElement(currentAreaKey, stats));
+        }
         statSlideIndicatorEl.textContent = `${t('statCarouselIndicatorText')} ${currentCategoryStatIndex + 1} / ${categoryStatKeys.length}`;
         prevStatBtn.disabled = currentCategoryStatIndex === 0;
         nextStatBtn.disabled = currentCategoryStatIndex === categoryStatKeys.length - 1;
@@ -593,34 +908,54 @@
     async function finishTest(isNewCompletion) {
         questionContainer.style.display = 'none'; progressInfoDisplayEl.style.display = 'none';
         confirmAnswerBtn.style.display = 'none'; nextQuestionBtn.style.display = 'none';
+        questionCategoryDisplayEl.style.display = 'none';
+
+        if (questionFeedbackEl.classList.contains('correct') || questionFeedbackEl.classList.contains('incorrect')) {
+            if (questionFeedbackEl.textContent.startsWith(t('answerCorrect')) || questionFeedbackEl.textContent.startsWith(t('answerIncorrect'))){
+                questionFeedbackEl.style.display = 'none'; // Skryť feedback k poslednej odpovedi
+            }
+        }
+
+
         testResultsArea.style.display = 'block'; resultsListEl.innerHTML = '';
 
         let correctCount = 0;
+        let answeredQuestionIdsThisTest = loadAnsweredQuestionIds();
+
         userAnswers.forEach(ans => {
             if(ans.is_correct) correctCount++;
+            answeredQuestionIdsThisTest.add(String(ans.question_id));
+
             const listItem = document.createElement('li');
-            const questionTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
-            let qTextInCurrentLang = ans[questionTextKey] || ans['text_sk'];
+            let qTextInCurrentLang = (currentLanguage === 'en' && ans.text_en) ? ans.text_en : ans.text_sk;
+            const displayedAreaNameInResults = getDisplayedAreaName(ans.area, ans.area_en);
+
+
             if (qTextInCurrentLang.startsWith("MC:")) qTextInCurrentLang = qTextInCurrentLang.substring(3).split("---")[0].trim();
             else if (qTextInCurrentLang.startsWith("WA:")) qTextInCurrentLang = qTextInCurrentLang.substring(3).trim();
-            listItem.innerHTML = `<strong>${t('questionTextLabel')}</strong> ${qTextInCurrentLang}<br><strong>${t('yourAnswerLabel')}</strong> ${ans.answer_given} ${ans.is_correct ? `<span style="color:green;">${t('correctTag')}</span>` : `<span style="color:red;">${t('incorrectTag')}</span>`}<br>${!ans.is_correct ? `<strong>${t('correctAnswerLabel')}</strong> <span class="correct-answer-display">${ans.correct_answer}</span><br>` : ''}<strong>${t('timeLabel')}</strong> ${ans.time_taken}${t('secondsSuffix')}`;
+
+            listItem.innerHTML = `<strong>${t('questionTextLabel')}</strong> ${qTextInCurrentLang}<br><small style="color:#555;"><em>${t('categoryLabel')} ${displayedAreaNameInResults}</em></small><br><strong>${t('yourAnswerLabel')}</strong> ${ans.answer_given} ${ans.is_correct ? `<span style="color:green;">${t('correctTag')}</span>` : `<span style="color:red;">${t('incorrectTag')}</span>`}<br>${!ans.is_correct ? `<strong>${t('correctAnswerLabel')}</strong> <span class="correct-answer-display">${ans.correct_answer}</span><br>` : ''}<strong>${t('timeLabel')}</strong> ${ans.time_taken}${t('secondsSuffix')}`;
             resultsListEl.appendChild(listItem);
         });
+        saveAnsweredQuestionIds(answeredQuestionIdsThisTest);
+
         resultsSummaryEl.innerHTML = `<p><strong>${t('totalScore')} ${correctCount} ${t('of')} ${allQuestions.length} ${t('questionsSuffix')}.</strong></p>`;
 
-        if (currentUserApiToken && currentUserId && userAnswers.length > 0) {
+        if (currentUserApiToken && currentUserId && currentTestId && userAnswers.length > 0) {
             const questionsForApi = userAnswers.map(ans => ({
-                question_id: ans.question_id, answered_correctly: ans.is_correct,
+                question_id: parseInt(ans.question_id),
+                answered_correctly: ans.is_correct,
                 time_taken: parseFloat(ans.time_taken)
             }));
-            const location = await getUserLocation(); // Získanie lokality
+            const location = await getUserLocation();
             const testDataPayload = {
-                // user_id: parseInt(currentUserId), // Predpokladáme, že backend získa z tokenu
-                city: location.city, country: location.country,
+                test_id: currentTestId, // Predpokladáme, že backend použije toto ID na finalizáciu testu
+                city: location.city,
+                country: location.country,
                 questions: questionsForApi
+                // Ak backend stále vyžaduje user_id v tele, treba ho pridať:
+                // user_id: parseInt(currentUserId)
             };
-            if (currentTestId) {
-            }
 
             try {
                 console.log("Odosielam výsledky testu:", JSON.stringify(testDataPayload, null, 2));
@@ -630,33 +965,53 @@
                     body: JSON.stringify(testDataPayload)
                 });
                 const storeTestData = await storeTestResponse.json();
-                if (storeTestResponse.ok && storeTestData.test_id) { // storeTest by mal vrátiť test_id
+                // API môže vracať rôzne success správy, prispôsobiť podľa potreby
+                if (storeTestResponse.ok && (storeTestData.test_id || storeTestData.message === "Test and answers stored successfully.")) {
                     console.log(t('testResultsSaved'), storeTestData);
-                    // Tu môžeme pridať vizuálnu notifikáciu používateľovi
+                    questionFeedbackEl.textContent = t('testResultsSaved');
+                    questionFeedbackEl.className = 'feedback correct'; // Zmena na correct pre úspešné uloženie
+                    questionFeedbackEl.style.display = 'block';
                 } else {
                     console.error(t('errorSavingTestResults'), storeTestData.error || storeTestData.message || 'Neznáma chyba API');
+                    if (!questionFeedbackEl.textContent.startsWith(t('errorInitializingTest'))) { // Aby sme neprepisovali pôvodnú chybu
+                        questionFeedbackEl.textContent = `${t('errorSavingTestResults')}: ${storeTestData.error || storeTestData.message || ''}`;
+                        questionFeedbackEl.className = 'feedback error';
+                        questionFeedbackEl.style.display = 'block';
+                    }
                 }
             } catch (storeError) {
                 console.error(t('errorCommunicationSavingTest'), storeError);
+                if (!questionFeedbackEl.textContent.startsWith(t('errorInitializingTest'))) {
+                    questionFeedbackEl.textContent = t('errorCommunicationSavingTest');
+                    questionFeedbackEl.className = 'feedback error';
+                    questionFeedbackEl.style.display = 'block';
+                }
             }
-        } else if (userAnswers.length > 0) { console.log(t('notLoggedInNoSave')); }
+        } else if (userAnswers.length > 0 && !(currentUserApiToken && currentUserId)) {
+            // Správa o neprihlásení by už mala byť zobrazená
+            console.log(t('notLoggedInNoSave'));
+        }
+
 
         areaStatsGlobal = {};
-        if (allQuestions.length > 0) {
+        if (userAnswers.length > 0) {
             userAnswers.forEach(ans => {
-                const questionDetails = allQuestions.find(q => q.id === ans.question_id);
-                if (questionDetails && questionDetails.area) {
-                    const area = questionDetails.area;
-                    if (!areaStatsGlobal[area]) { areaStatsGlobal[area] = { correct: 0, total: 0, questionsToReviseText: [] };}
-                    areaStatsGlobal[area].total++;
-                    if (ans.is_correct) { areaStatsGlobal[area].correct++; }
-                    else {
-                        const qTextKey = currentLanguage === 'sk' ? 'text_sk' : 'text_en';
-                        let qText = questionDetails[qTextKey] || questionDetails['text_sk'];
-                        if (qText.startsWith("MC:")) qText = qText.substring(3).split("---")[0].trim();
-                        else if (qText.startsWith("WA:")) qText = qText.substring(3).trim();
-                        areaStatsGlobal[area].questionsToReviseText.push(qText.length > 70 ? qText.substring(0, 67) + "..." : qText);
-                    }
+                const area = ans.area; // Použijeme SK verziu ako kľúč pre areaStatsGlobal
+                if (!areaStatsGlobal[area]) { areaStatsGlobal[area] = { correct: 0, total: 0, questionsToReviseText: [] };}
+                areaStatsGlobal[area].total++;
+                if (ans.is_correct) { areaStatsGlobal[area].correct++; }
+                else {
+                    let qTextSk = ans.text_sk;
+                    if (qTextSk.startsWith("MC:")) qTextSk = qTextSk.substring(3).split("---")[0].trim();
+                    else if (qTextSk.startsWith("WA:")) qTextSk = qTextSk.substring(3).trim();
+                    qTextSk = qTextSk.length > 70 ? qTextSk.substring(0, 67) + "..." : qTextSk;
+
+                    let qTextEn = ans.text_en;
+                    if (qTextEn && qTextEn.startsWith("MC:")) qTextEn = qTextEn.substring(3).split("---")[0].trim();
+                    else if (qTextEn && qTextEn.startsWith("WA:")) qTextEn = qTextEn.substring(3).trim();
+                    qTextEn = qTextEn && qTextEn.length > 70 ? qTextEn.substring(0, 67) + "..." : qTextEn;
+
+                    areaStatsGlobal[area].questionsToReviseText.push({sk: qTextSk, en: qTextEn});
                 }
             });
         }
@@ -674,7 +1029,17 @@
             startTestBtn.disabled = false;
             startTestBtn.textContent = t('startNewTest');
             attemptInfoDisplayEl.style.display = 'none';
-            console.log("Final answers:", userAnswers);
+            // Skryť aj globálne info/error správy pri začatí nového testu, ak nie sú kritické
+            if (questionFeedbackEl.classList.contains('info') || questionFeedbackEl.classList.contains('error')) {
+                if (questionFeedbackEl.textContent === t('notLoggedInNoSave') ||
+                    questionFeedbackEl.textContent.startsWith(t('errorSavingTestResults')) ||
+                    questionFeedbackEl.textContent.startsWith(t('errorCommunicationSavingTest')) ||
+                    questionFeedbackEl.textContent.startsWith(t('testResultsSaved'))) {
+                    questionFeedbackEl.style.display = 'none';
+                }
+                // Chyby inicializácie necháme, ak by bránili ďalšiemu testu
+            }
+            console.log("Final answers for this test:", userAnswers);
         }
     }
 
@@ -683,20 +1048,39 @@
         localStorage.setItem('mathTestLanguageHomepage', currentLanguage);
         updateUIText();
 
-        const isQuestionVisible = questionContainer.style.display === 'block';
+        const isQuestionVisible = questionContainer.style.display === 'block' && allQuestions.length > 0 && currentQuestionIndex < allQuestions.length;
         const areResultsVisible = testResultsArea.style.display === 'block';
 
-        if (isQuestionVisible && !areResultsVisible && allQuestions.length > 0 && currentQuestionIndex < allQuestions.length) {
-            displayQuestion();
+        if (isQuestionVisible && !areResultsVisible) {
+            displayQuestion(); // Prekreslí otázku s novým jazykom kategórie
+            // Ak je feedback k odpovedi viditeľný, mohol by sa tiež preložiť, ale je jednoduchšie, že zmizne s ďalšou otázkou
+            if (questionFeedbackEl.style.display !== 'none' &&
+                (questionFeedbackEl.classList.contains('correct') || questionFeedbackEl.classList.contains('incorrect'))) {
+                // Simulujeme klik na next, aby sa zobrazil nový feedback alebo prešlo ďalej,
+                // alebo jednoducho preložíme existujúci text, ak je to len "správne/nesprávne"
+                // Zatiaľ necháme tak, používateľ aj tak prejde na ďalšiu otázku alebo test dokončí.
+            } else if (questionFeedbackEl.style.display !== 'none' && questionFeedbackEl.classList.contains('info')){
+                // Preložiť informačné správy ako 'pleaseSelectAnswer' atď.
+                // Toto je zložitejšie, lebo by sme museli vedieť, aký kľúč bol použitý.
+                // Jednoduchšie je, že tieto správy sú dočasné.
+            }
+
+
         } else if (areResultsVisible) {
-            finishTest(false);
+            finishTest(false); // Prekreslí výsledky s novým jazykom
+        }
+        // Ak je varovné modálne okno zobrazené, aktualizujeme jeho texty
+        if (warningModal.style.display === 'block') {
+            warningModalTitle.textContent = t('warningModalTitle');
+            // warningModalText.textContent = t(aktuálny_kľúč_správy_v_modale); // Toto je zložitejšie, text sa nastavuje dynamicky
+            warningConfirmBtn.textContent = t('warningConfirmBtn');
+            warningCancelBtn.textContent = t('warningCancelBtn');
         }
     });
 
-    // Inicializácia pri načítaní stránky testu
-    currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk'; // Načítanie jazyka
+    currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk';
     currentUserApiToken = localStorage.getItem('apiToken');
-    currentUserId = localStorage.getItem('userId'); // Načítame user_id
+    currentUserId = localStorage.getItem('userId');
     updateUIText();
 
 </script>

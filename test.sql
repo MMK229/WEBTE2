@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 18, 2025 at 10:27 PM
+-- Generation Time: May 19, 2025 at 09:54 PM
 -- Server version: 8.0.42-0ubuntu0.24.04.1
 -- PHP Version: 8.3.17
 
@@ -203,16 +203,18 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `username` varchar(50) COLLATE utf8mb4_slovak_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_slovak_ci NOT NULL,
-  `api_token` varchar(64) COLLATE utf8mb4_slovak_ci DEFAULT NULL
+  `api_token` varchar(64) COLLATE utf8mb4_slovak_ci DEFAULT NULL,
+  `admin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_slovak_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `api_token`) VALUES
-(2, 'xhusek@stuba.sk', '$2y$10$u0PayNPtcmeNrbFrxg8Bt.j6nriuOuzEXkBIRdw5ygrU0d894iMNy', '8b6f48f15f9b17af2847ae14e2df0bd95aaa41601cc4537720b7c5534905dd7a'),
-(3, 'marekdurica229@gmail.com', '$2y$10$lsXBMB0CPnsj0JzhRnsJSuJBlg7rlWBLwEn8jT7GMatgRYZKU8LkS', '3544c5202e03207fdef6e428003430cea74152d64339176f7200569d96df3b4f');
+INSERT INTO `users` (`id`, `username`, `password`, `api_token`, `admin`) VALUES
+(2, 'xhusek@stuba.sk', '$2y$10$u0PayNPtcmeNrbFrxg8Bt.j6nriuOuzEXkBIRdw5ygrU0d894iMNy', '8b6f48f15f9b17af2847ae14e2df0bd95aaa41601cc4537720b7c5534905dd7a', 0),
+(3, 'marekdurica229@gmail.com', '$2y$10$lsXBMB0CPnsj0JzhRnsJSuJBlg7rlWBLwEn8jT7GMatgRYZKU8LkS', '36f0d359db455beef2f659b09dad25dd8cc31fc6faa97511f9c7bef6caa797bb', NULL),
+(4, 'admin', '$2y$10$8YYRaWEATEzBmyPGW5Eby.j1uvODSnAFRxitLwlG13m4HDCGRkQ4S', 'c670fecd3719dd0a12640c9f3a89de0e12562c9ba9ec3135060d05bfc41749ea', 1);
 
 --
 -- Indexes for dumped tables
@@ -272,7 +274,7 @@ ALTER TABLE `test_questions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

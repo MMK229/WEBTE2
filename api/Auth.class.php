@@ -169,4 +169,46 @@ class Auth {
 
         return $stmt->fetchColumn() ?: false;
     }
+    /**
+ * @OA\Get(
+ *     path="/skuska/api/api.php",
+ *     summary="Získaj, či je používateľ admin",
+ *     tags={"Používateľ"},
+ *     operationId="getAdminStatus",
+ *     parameters={
+ *         @OA\Parameter(
+ *             name="route",
+ *             in="query",
+ *             required=true,
+ *             @OA\Schema(type="string", example="isAdmin")
+ *         ),
+ *         @OA\Parameter(
+ *             name="api_token",
+ *             in="header",
+ *             required=true,
+ *             @OA\Schema(type="string", example="abc123token")
+ *         )
+ *     },
+ *     @OA\Response(
+ *         response=200,
+ *         description="Stav admina",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="admin", type="boolean", example=true)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Neplatný token"
+ *     )
+ * )
+ */
+    public function isAdmin($user_id) {
+        $stmt = $this->db->prepare("SELECT admin FROM users WHERE id = :id");
+        $stmt->execute([':id' => $user_id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (bool)($user['admin'] ?? false);
+    }
+
+
 }

@@ -48,6 +48,61 @@ paths:
                 $ref: '#/components/schemas/Question'
         '404':
           description: Otázka neexistuje
+  /skuska/api/api.php?route=tests:
+    get:
+      summary: Získať všetky testy aktuálneho používateľa
+      tags: [Test]
+      operationId: getAllUserTests
+      parameters:
+        - name: route
+          in: query
+          required: true
+          schema:
+            type: string
+            example: tests
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Zoznam testov
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 42
+                    datetime:
+                      type: string
+                      format: date-time
+                    city:
+                      type: string
+                      example: Bratislava
+                    country:
+                      type: string
+                      example: Slovensko
+                    questions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          question_id:
+                            type: integer
+                          area:
+                            type: string
+                          text_sk:
+                            type: string
+                          text_en:
+                            type: string
+                          answered_correctly:
+                            type: boolean
+                          time_taken:
+                            type: number
+        '401':
+          description: Neautorizovaný
 
   /skuska/api/api.php?route=tests/3:
     get:
@@ -278,6 +333,35 @@ paths:
                     example: novyTokenABC123
         '401':
           description: Neautorizovaný
+  /skuska/api/api.php?route=is-admin:
+    get:
+      tags: [Autentifikácia]
+      summary: Zisti, či je používateľ admin
+      operationId: isAdmin
+      parameters:
+        - name: route
+          in: query
+          required: true
+          schema:
+            type: string
+            example: is-admin
+      security:
+        - bearerAuth: []     # 🔒 štandardná ochrana
+      responses:
+        '200':
+          description: Admin stav
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  admin:
+                    type: boolean
+                    example: true
+        '401':
+          description: Neautorizovaný prístup
+
+
 
 
 components:
@@ -303,6 +387,8 @@ components:
         api_token:
           type: string
           example: d87a01b29c...
+        admin:
+          type: boolean
 
     Question:
       type: object

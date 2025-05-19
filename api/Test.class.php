@@ -216,4 +216,27 @@ class Test {
         $stmt->execute([':id' => $testId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllUserTestsWithQuestions($user_id) {
+        $stmt = $this->db->prepare("SELECT * FROM tests WHERE user_id = :id ORDER BY datetime DESC");
+        $stmt->execute([':id' => $user_id]);
+        $tests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($tests as &$test) {
+            $test_id = $test['id'];
+            $qstmt = $this->db->prepare("
+                SELECT tq.question_id, q.area, q.text_sk, q.text_en, tq.answered_correctly, tq.time_taken
+                FROM test_questions tq
+                JOIN questions q ON tq.question_id = q.id
+                WHERE tq.test_id = :test_id
+            ");
+            $qstmt->execute([':test_id' => $test_id]);
+            $test['questions'] = $qstmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $tests;
+    }
+
 }
+
+

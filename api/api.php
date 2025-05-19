@@ -1,9 +1,17 @@
 <?php
-if ($_SERVER['HTTP_ORIGIN'] === 'https://node119.webte.fei.stuba.sk') {
-    header('Access-Control-Allow-Origin: https://node119.webte.fei.stuba.sk');
-    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With'); 
+$allowedOrigins = [
+    'https://node119.webte.fei.stuba.sk',
+    'https://node117.webte.fei.stuba.sk',
+    'https://localhost:3000' 
+];
 
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+    
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(200);
         exit();
@@ -12,6 +20,7 @@ if ($_SERVER['HTTP_ORIGIN'] === 'https://node119.webte.fei.stuba.sk') {
 ?>
 
 <?php
+
 
 require_once(__DIR__ . '/../config.php');
 require_once('Test.class.php');
@@ -65,8 +74,14 @@ switch ($method) {
                 http_response_code(404);
                 echo json_encode(["message" => "Otázka neexistuje"]);
             }
+        } elseif ($route[0] === 'tests' && !isset($route[1])) {
+            echo json_encode($test->getAllUserTestsWithQuestions($user_id));
         } elseif ($route[0] === 'tests' && is_numeric($route[1] ?? null)) {
             echo json_encode($test->getTestResult((int)$route[1]));
+        } elseif ($route[0] === 'is-admin') {
+            $admin = $auth->isAdmin($user_id);
+            echo json_encode(["admin" => $admin]);
+            break;
         } else {
             http_response_code(404);
             echo json_encode(["message" => "Not found"]);

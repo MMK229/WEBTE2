@@ -6,7 +6,12 @@
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; padding: 20px; line-height: 1.5; }
-        .top-bar { display: flex; justify-content: flex-end; margin-bottom: 15px; padding-right: 20px; }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 0 20px;
+        }
         .lang-btn { padding: 8px 12px; border: 1px solid #ced4da; background-color: #fff; cursor: pointer; border-radius: 4px; font-size: 0.9em; }
         .lang-btn:hover { background-color: #e9ecef; }
         .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
@@ -138,6 +143,20 @@
         }
         .answer-section-wa, .mc-options-container, .submit-btn, .next-question-btn { display: none; }
 
+        .action-btn {
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.05em;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border: none;
+            font-weight: 500;
+            min-width: 220px;
+        }
+
         /* Štýly pre modálne okno */
         .modal {
             display: none;
@@ -196,6 +215,7 @@
 </head>
 <body>
 <div class="top-bar">
+    <a href="index.php" id="back-to-home-btn" class="action-btn">Späť</a>
     <button id="toggle-lang-btn" class="lang-btn">English</button>
 </div>
 <div class="container">
@@ -276,6 +296,7 @@
     // UI Elementy
     const mainTitleElTest = document.getElementById('main-title-test');
     const toggleLangBtn = document.getElementById('toggle-lang-btn');
+    const backBtn = document.getElementById('back-to-home-btn');
     const startTestBtn = document.getElementById('start-test-btn');
     const questionContainer = document.querySelector('.question-container');
     const questionTextEl = document.getElementById('question-text');
@@ -342,6 +363,7 @@
             errorSavingTestResults: "Nepodarilo sa uložiť výsledky testu na server.",
             errorCommunicationSavingTest: "Chyba komunikácie pri ukladaní výsledkov testu.",
             categoryLabel: "Kategória:",
+            backBtn: "Opustiť test",
             uncategorizedArea: "Neurčená kategória",
             warningModalTitle: "Upozornenie",
             warningConfirmBtn: "Pokračovať",
@@ -374,6 +396,7 @@
             errorSavingTestResults: "Failed to save test results to the server.",
             errorCommunicationSavingTest: "Communication error when saving test results.",
             categoryLabel: "Category:",
+            backBtn: "Abandon Test",
             uncategorizedArea: "Uncategorized",
             warningModalTitle: "Warning",
             warningConfirmBtn: "Continue",
@@ -396,6 +419,7 @@
         }
         if (startTestBtn.style.display !== 'none') startTestBtn.textContent = t('startTest');
         confirmAnswerBtn.textContent = t('confirmAnswer');
+        backBtn.textContent = t('backBtn');
         nextQuestionBtn.textContent = t('nextQuestion');
         questionLabelEl.textContent = t('question');
         ofLabelEl.textContent = t('of');
@@ -1069,10 +1093,8 @@
         } else if (areResultsVisible) {
             finishTest(false); // Prekreslí výsledky s novým jazykom
         }
-        // Ak je varovné modálne okno zobrazené, aktualizujeme jeho texty
         if (warningModal.style.display === 'block') {
             warningModalTitle.textContent = t('warningModalTitle');
-            // warningModalText.textContent = t(aktuálny_kľúč_správy_v_modale); // Toto je zložitejšie, text sa nastavuje dynamicky
             warningConfirmBtn.textContent = t('warningConfirmBtn');
             warningCancelBtn.textContent = t('warningCancelBtn');
         }

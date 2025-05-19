@@ -99,6 +99,12 @@
             background-color: #6c757d;
             color: white;
         }
+
+        .action-btn.tertiary-action {
+            background-color: #395ad8;
+            color: white;
+        }
+
         .action-btn.secondary-action:hover:not(:disabled) { background-color: #5a6268; }
         .action-btn.secondary-action.disabled-link { /* Pre deaktivovaný profil link */
             opacity: 0.65;
@@ -288,6 +294,7 @@
     <nav class="main-navigation">
         <a href="test.php" id="start-quiz-link" class="action-btn primary-action">Spustiť Nový Test</a>
         <a href="profile.php" id="profile-link" class="action-btn secondary-action">Môj Profil</a>
+        <a href="manual.php" id="manual-link" class="action-btn tertiary-action">Manuál</a>
     </nav>
 
     <section class="user-actions">
@@ -365,6 +372,7 @@
     const welcomeMessageEl = document.getElementById('welcome-message');
     const startQuizLinkEl = document.getElementById('start-quiz-link');
     const profileLinkEl = document.getElementById('profile-link');
+    const manualLinkEl = document.getElementById('manual-link');
     const userAuthTitleEl = document.getElementById('user-auth-title');
     const showLoginModalBtnEl = document.getElementById('show-login-modal-btn');
     const showRegisterModalBtnEl = document.getElementById('show-register-modal-btn');
@@ -397,7 +405,7 @@
             loadAllQuestionsBtn: "Načítať Všetky Otázky (API Test)", loadingData: "Načítavam dáta...",
             errorLoadingData: "Chyba pri načítaní dát.", noDataLoaded: "Žiadne dáta neboli načítané.",
             footerTeamName: "WEBTE2", footerRights: "Všetky práva vyhradené.", switchToEnglish: "Switch to English", switchToSlovak: "Prepnúť na Slovenčinu",
-            loginModalTitle: "Prihlásenie", registerModalTitle: "Registrácia", usernameLabel: "Používateľské meno:",
+            loginModalTitle: "Prihlásenie", registerModalTitle: "Registrácia", manualLink: "Manuál", usernameLabel: "Používateľské meno:",
             passwordLabel: "Heslo:", passwordConfirmLabel: "Potvrdenie hesla:", loginSubmitBtn: "Prihlásiť sa",
             registerSubmitBtn: "Zaregistrovať sa", registrationSuccess: "Registrácia úspešná! Môžete sa prihlásiť.",
             loginSuccess: "Prihlásenie úspešné!", generalError: "Vyskytla sa chyba. Skúste znova.",
@@ -408,7 +416,7 @@
         en: {
             pageTitle: "Home - Mathematics Tests", mainTitle: "Welcome to the Mathematics Test Application",
             welcomeMessage: "Test your knowledge, prepare for entrance exams, or just review the material!",
-            startQuizLink: "Start New Test", profileLink: "My Profile", userAuthTitle: "Login / Registration",
+            startQuizLink: "Start New Test", profileLink: "My Profile", manualLink: "Manual", userAuthTitle: "Login / Registration",
             loginBtn: "Login", registerBtn: "Register", devToolsTitle: "Developer Tools",
             loadAllQuestionsBtn: "Load All Questions (API Test)", loadingData: "Loading data...",
             errorLoadingData: "Error loading data.", noDataLoaded: "No data was loaded.",
@@ -441,6 +449,7 @@
         welcomeMessageEl.textContent = t('welcomeMessage');
         startQuizLinkEl.textContent = t('startQuizLink');
         profileLinkEl.textContent = t('profileLink');
+        manualLinkEl.textContent = t('manualLink');
         userAuthTitleEl.textContent = t('userAuthTitle');
         showLoginModalBtnEl.textContent = t('loginBtn');
         showRegisterModalBtnEl.textContent = t('registerBtn');

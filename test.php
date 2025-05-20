@@ -1,223 +1,33 @@
 <!DOCTYPE html>
-<html lang="sk"> <head>
+<html lang="sk"> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matematický Test</title>
-
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; padding: 20px; line-height: 1.5; }
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 0 20px;
+    <link rel="stylesheet" href="theme.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
         }
-        .lang-btn { padding: 8px 12px; border: 1px solid #ced4da; background-color: #fff; cursor: pointer; border-radius: 4px; font-size: 0.9em; }
-        .lang-btn:hover { background-color: #e9ecef; }
-        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #343a40; margin-bottom: 25px; font-weight: 500;}
-        .question-container { border: 1px solid #dee2e6; padding: 20px; margin-bottom: 20px; background-color: #ffffff; border-radius: 5px;}
-        .question-text { font-size: 1.25em; margin-bottom: 10px; min-height: 40px; line-height: 1.6; color: #495057; }
-        .question-category-text { font-size: 0.9em; color: #6c757d; margin-bottom: 15px; font-style: italic; }
-        .answer-section-wa label { display: block; margin-bottom: 8px; font-weight: 500; color: #495057; }
-        .answer-input { width: 100%; padding: 10px; margin-bottom:15px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 1em;}
-
-        .mc-options-container button {
-            display: block; width: 100%; text-align: left; padding: 12px 15px; margin-bottom: 8px;
-            background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 4px; cursor: pointer;
-            font-size: 1em; transition: background-color 0.2s ease, border-color 0.2s ease; color: #495057;
-        }
-        .mc-options-container button:not(:disabled):hover { /* Všeobecný hover pre neoznačené a neaktívne tlačidlá */
-            background-color: #e9ecef;
-            border-color: #adb5bd;
-        }
-        .mc-options-container button.marked {
-            background-color: #0d6efd;
-            border-color: #0a58ca;
-            color: white;
-            font-weight: 500;
-        }
-
-        .mc-options-container button.marked:not(:disabled):hover {
-            background-color: #0b5ed7;
-            border-color: #0a53be;
-            color: white;
-        }
-        .mc-options-container button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .mc-options-container button.user-correct, .answer-input.user-correct {
-            background-color: #d1e7dd !important; border-color: #badbcc !important; color: #0f5132 !important; font-weight: 500;
-        }
-        .mc-options-container button.user-incorrect, .answer-input.user-incorrect {
-            background-color: #f8d7da !important; border-color: #f5c2c7 !important; color: #842029 !important; font-weight: 500;
-        }
-        .mc-options-container button.actual-correct {
-            background-color: #d1e7dd !important; border: 2px solid #198754 !important; color: #0f5132 !important; font-weight: bold;
-        }
-        .answer-input.user-correct { border: 2px solid #198754; background-color: #d1e7dd; }
-        .answer-input.user-incorrect { border: 2px solid #dc3545; background-color: #f8d7da; }
-
-        #correct-answer-wa-display {
-            margin-top: 10px; padding: 10px; border: 1px solid #198754;
-            background-color: #d1e7dd; color: #0f5132; border-radius: 4px;
-            font-size: 1em; line-height: 1.5; font-weight: 500;
-        }
-
-        #start-test-btn { background-color: #198754; color: white; }
-        #start-test-btn:hover { background-color: #157347; }
-        .submit-btn { background-color: #ffc107; color: #000; border: 1px solid #ffc107; }
-        .submit-btn:hover:not(:disabled) { background-color: #ffca2c; border-color: #ffc720;} /* Hover len pre aktívne */
-        .next-question-btn { background-color: #0d6efd; color: white; }
-        .next-question-btn:hover:not(:disabled) { background-color: #0b5ed7; } /* Hover len pre aktívne */
-
-        #start-test-btn, .submit-btn, .next-question-btn {
-            padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 1em;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-            display: block; margin: 20px auto 0 auto; min-width: 160px; text-align: center; border: none; font-weight: 500;
-        }
-        .submit-btn:disabled, .next-question-btn:disabled { /* Štýl pre deaktivované potvrdzovacie/ďalšie tlačidlá */
-            background-color: #ced4da;
-            border-color: #ced4da;
-            color: #6c757d;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .progress-info, .attempt-info { text-align: center; margin-bottom: 15px; font-size: 0.95em; color: #6c757d; }
-        .feedback { margin-top: 20px; font-style: normal; padding: 12px; border-radius: 4px; text-align: center; line-height: 1.6; font-size: 0.95em;}
-        .feedback.correct { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-        .feedback.incorrect { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
-        .feedback.info { background-color: #cfe2ff; color: #084298; border: 1px solid #b6d4fe;}
-
-
-        #test-results-area { padding: 20px; margin-top: 20px; background-color: #ffffff; border-radius: 5px; }
-        #test-results-area h2 { text-align: center; margin-bottom: 20px; font-weight: 500; }
-        #test-results-area ul#results-list { list-style-type: none; padding-left: 0; margin-top: 25px;}
-        #test-results-area li { background-color: #f8f9fa; margin-bottom: 10px; padding: 12px; border-radius: 4px; border: 1px solid #dee2e6; font-size: 0.95em;}
-        #test-results-area .correct-answer-display { font-weight: bold; color: #198754;}
-
-        #category-stats-title { font-weight: 500; color: #343a40; text-align: center; }
-        #category-stats-carousel {
-            border: 1px solid #e0e0e0; border-radius: 5px; padding: 20px;
-            background-color: #f8f9fa; margin-bottom: 25px;
-        }
-        .carousel-controls {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-        }
-        .stat-nav-btn {
-            background-color: #6c757d; color: white; border: none;
-            padding: 8px 15px; border-radius: 4px; cursor: pointer;
-            font-size: 1.1em; line-height: 1; font-weight: bold;
-        }
-        .stat-nav-btn:hover:not(:disabled) { background-color: #5a6268; }
-        .stat-nav-btn:disabled { background-color: #ced4da; cursor: not-allowed; opacity: 0.7; }
-        #stat-slide-indicator { font-size: 0.95em; color: #495057; font-weight: 500; }
-        #category-stats-slide-content .category-stat-item {
-            margin-bottom: 0; border: none; background-color: transparent; padding: 0;
-        }
-        .category-stat-item h4 { margin-top: 0; margin-bottom: 10px; font-size: 1.2em; color: #333; font-weight: 500; text-align: center;}
-        .category-stat-summary { font-size: 0.95em; margin-bottom: 10px; text-align: center;}
-        .progress-bar-container {
-            width: 100%; background-color: #e9ecef; border-radius: .35rem;
-            height: 22px; margin-bottom: 12px; overflow: hidden;
-        }
-        .progress-bar-correct {
-            background-color: #28a745; height: 100%; float: left;
-            text-align: center; color: white; line-height: 22px;
-            font-size: 0.85em; white-space: nowrap; padding: 0 5px;
-            box-sizing: border-box; transition: width 0.5s ease-in-out;
-        }
-        .category-stat-item .revise-questions-list {
-            font-size: 0.9em; padding-left: 20px; margin-top: 8px;
-            list-style-type: disc; color: #555;
-        }
-        .category-stat-item .revise-questions-list li {
-            margin-bottom: 4px; background-color: transparent;
-            padding: 0; border: none;
-        }
-        .category-stat-item .all-correct-message {
-            color: #0f5132; font-weight: 500; margin-top: 8px; font-size: 0.95em;
-        }
-        .answer-section-wa, .mc-options-container, .submit-btn, .next-question-btn { display: none; }
-
-        .action-btn {
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.05em;
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            border: none;
-            font-weight: 500;
-            min-width: 220px;
-        }
-
-        /* Štýly pre modálne okno */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000; /* Malo by byť nad ostatným obsahom */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5); /* Polopriehľadné pozadie */
-            padding-top: 60px; /* Odsadenie zhora */
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto; /* Centrovanie a odsadenie */
-            padding: 25px 30px;
-            border: 1px solid #888;
-            width: 90%; /* Šírka pre menšie obrazovky */
-            max-width: 500px; /* Maximálna šírka */
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .modal-content h3 { /* Titulok v modálnom okne */
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-weight: 500;
-            color: #343a40;
-        }
-        .modal-content p { /* Text v modálnom okne */
-            margin-bottom: 25px;
-            font-size: 1em;
-            line-height: 1.6;
-            text-align: center; /* Centrovanie textu varovania */
-        }
-        .modal .button-group { /* Skupina tlačidiel v modále */
-            display: flex;
-            justify-content: flex-end; /* Tlačidlá napravo */
-            gap: 10px; /* Medzera medzi tlačidlami */
-        }
-        .modal .action-btn { /* Tlačidlá v modále */
-            min-width: 100px;
-        }
-        .modal .action-btn.secondary-action { /* Špeciálny štýl pre "Cancel" tlačidlo */
-            background-color: #6c757d;
-            color: white;
-        }
-        .modal .action-btn.secondary-action:hover:not(:disabled) {
-            background-color: #5a6268;
-        }
-
-    </style>
-
+    })();
+    </script>
+    <script src="theme.js" defer></script>
 </head>
 <body>
-<div class="top-bar">
-    <a href="index.php" id="back-to-home-btn" class="action-btn">Späť</a>
-    <button id="toggle-lang-btn" class="lang-btn">English</button>
-</div>
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="index.php" class="navbar-brand">Math Test</a>
+        <a href="index.php" class="nav-link">Domov</a>
+    </div>
+    <ul class="navbar-nav">
+        <li class="nav-item"><a href="profile.php" class="nav-link">Môj Profil</a></li>
+        <li class="nav-item"><a href="manual.php" class="nav-link">Manuál</a></li>
+        <li class="nav-item"><button id="toggle-lang-btn" class="btn btn-secondary">English</button></li>
+        <li class="nav-item"><button id="toggle-theme-btn" class="theme-toggle">🌙</button></li>
+    </ul>
+</nav>
 <div class="container">
     <h1 id="main-title-test">Matematický Test</h1>
     <div class="attempt-info" id="attempt-info-display" style="display: none;"></div>
@@ -235,8 +45,8 @@
                 <div id="correct-answer-wa-display" style="display: none;"></div>
             </div>
             <div id="mc-options-container" class="mc-options-container"></div>
-            <button id="submit-answer-btn" class="submit-btn" style="display: none;">Potvrdiť</button>
-            <button id="next-question-btn" class="next-question-btn" style="display: none;">Ďalšia otázka</button>
+            <button id="submit-answer-btn" class="btn btn-primary" style="display: none;">Potvrdiť</button>
+            <button id="next-question-btn" class="btn btn-primary" style="display: none;">Ďalšia otázka</button>
             <div id="question-feedback" class="feedback" style="display: none;"></div>
         </div>
 
@@ -247,16 +57,16 @@
             <h3 id="category-stats-title" style="display: none; margin-top: 0; margin-bottom:10px;">Štatistika podľa oblastí:</h3>
             <div id="category-stats-carousel" style="display: none;">
                 <div class="carousel-controls">
-                    <button id="prev-stat-btn" class="stat-nav-btn">&lt;</button>
+                    <button id="prev-stat-btn" class="btn btn-primary">&lt;</button>
                     <span id="stat-slide-indicator"></span>
-                    <button id="next-stat-btn" class="stat-nav-btn">&gt;</button>
+                    <button id="next-stat-btn" class="btn btn-primary">&gt;</button>
                 </div>
                 <div id="category-stats-slide-content"></div>
             </div>
             <ul id="results-list"></ul>
         </div>
     </div>
-    <button id="start-test-btn">Začať Test</button>
+    <button id="start-test-btn" class="btn btn-primary">Začať Test</button>
 </div>
 
 <div id="warning-modal" class="modal">

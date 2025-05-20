@@ -5,159 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title-manual">Používateľská Príručka</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f7f6;
-            color: #333;
-            padding: 20px;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+    <link rel="stylesheet" href="theme.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
         }
-        .top-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
-            padding-right: 20px;
-            width: 100%;
-            max-width: 840px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .lang-btn {
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            background-color: #fff;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-        .lang-btn:hover { background-color: #e9ecef; }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            flex-grow: 1;
-        }
-        header.page-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
-        header.page-header h1 {
-            color: #343a40;
-            margin-bottom: 10px;
-            font-weight: 500;
-            font-size: 2.2em;
-        }
-        nav.main-navigation {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-            align-items: center;
-        }
-        .action-btn {
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.05em;
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            border: none;
-            font-weight: 500;
-            min-width: 220px;
-        }
-        .action-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .action-btn.primary-action {
-            background-color: #198754; /* Green for primary actions */
-            color: white;
-        }
-        .action-btn.primary-action:hover:not(:disabled) { background-color: #157347; }
-
-        .action-btn.secondary-action {
-            background-color: #6c757d; /* Gray for secondary actions */
-            color: white;
-        }
-        .action-btn.secondary-action:hover:not(:disabled) { background-color: #5a6268; }
-
-        #manual-content-body h2 {
-            font-weight: 500;
-            color: #343a40;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 1.6em;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        #manual-content-body h3 {
-            font-weight: 500;
-            color: #495057;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 1.3em;
-        }
-        #manual-content-body p, #manual-content-body li {
-            color: #495057;
-            margin-bottom: 10px;
-        }
-        #manual-content-body ul {
-            padding-left: 20px;
-            list-style-type: disc;
-        }
-        #manual-content-body strong { /* For emphasized button names etc. */
-            color: #0d6efd;
-        }
-        #manual-content-body code { /* If you use <code> for anything specific */
-            background-color: #e9ecef;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-        }
-
-        .download-button-container {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-
-        footer.page-footer {
-            text-align: center;
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #6c757d;
-            font-size: 0.9em;
-        }
-    </style>
+    })();
+    </script>
+    <script src="theme.js"></script>
 </head>
 <body>
 
-<div class="top-bar">
-    <button id="toggle-lang-btn-manual" class="lang-btn">English</button>
-</div>
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="index.php" class="navbar-brand">Math Test</a>
+        <a href="index.php" class="nav-link">Domov</a>
+    </div>
+    <ul class="navbar-nav">
+        <li class="nav-item"><a href="profile.php" class="nav-link">Môj Profil</a></li>
+        <li class="nav-item"><a href="manual.php" class="nav-link active">Manuál</a></li>
+        <li class="nav-item"><a href="test.php" id="start-quiz-link" class="btn btn-primary">Spustiť Nový Test</a></li>
+        <li class="nav-item"><button id="toggle-lang-btn-manual" class="btn btn-secondary">English</button></li>
+        <li class="nav-item"><button id="toggle-theme-btn" class="theme-toggle">🌙</button></li>
+    </ul>
+</nav>
 
 <div class="container">
     <header class="page-header">
         <h1 id="manual-main-title">Používateľská Príručka</h1>
     </header>
-
-    <nav class="main-navigation">
-        <a href="index.php" id="back-to-home-btn" class="action-btn secondary-action">Späť na Domovskú Stránku</a>
-    </nav>
 
     <div id="manual-content-body">
         <h2 id="manual-intro-heading"></h2>
@@ -265,7 +143,6 @@
         sk: {
             pageTitle: "Používateľská Príručka - Testy z Matematiky",
             mainTitle: "Používateľská Príručka",
-            backToHome: "Späť na Domovskú Stránku",
             downloadPdfBtnText: "Stiahnuť Príručku ako PDF",
 
             introHeading: "Úvod",
@@ -345,7 +222,6 @@
         en: {
             pageTitle: "User Manual - Mathematics Tests",
             mainTitle: "User Manual",
-            backToHome: "Back to Homepage",
             downloadPdfBtnText: "Download Manual as PDF",
 
             introHeading: "Introduction",
@@ -432,7 +308,6 @@
         document.documentElement.lang = currentLanguage;
         document.getElementById('page-title-manual').textContent = tManual('pageTitle');
         document.getElementById('manual-main-title').textContent = tManual('mainTitle');
-        document.getElementById('back-to-home-btn').textContent = tManual('backToHome');
         downloadPdfBtn.textContent = tManual('downloadPdfBtnText');
 
         // Populate manual content

@@ -3,284 +3,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Domovská Stránka - Testy z Matematiky</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f7f6;
-            color: #333;
-            padding: 20px;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+    <link rel="stylesheet" href="theme.css">
+    <script>
+    // Apply theme immediately to prevent flash
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
         }
-        .top-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
-            padding-right: 20px;
-            width: 100%;
-            max-width: 840px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .lang-btn {
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            background-color: #fff;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-        .lang-btn:hover { background-color: #e9ecef; }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            flex-grow: 1;
-        }
-        header.page-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
-        header.page-header h1 {
-            color: #343a40;
-            margin-bottom: 10px;
-            font-weight: 500;
-            font-size: 2.2em;
-        }
-        .welcome-message {
-            font-size: 1.1em;
-            color: #6c757d;
-            margin-bottom: 0;
-        }
-
-        nav.main-navigation {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-            align-items: center;
-        }
-        .action-btn {
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.05em;
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            border: none;
-            font-weight: 500;
-            min-width: 220px;
-        }
-        .action-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .action-btn:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
-        .action-btn.primary-action {
-            background-color: #198754;
-            color: white;
-        }
-        .action-btn.primary-action:hover:not(:disabled) { background-color: #157347; }
-
-        .action-btn.secondary-action {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .action-btn.tertiary-action {
-            background-color: #395ad8;
-            color: white;
-        }
-
-        .action-btn.secondary-action:hover:not(:disabled) { background-color: #5a6268; }
-        .action-btn.secondary-action.disabled-link { /* Pre deaktivovaný profil link */
-            opacity: 0.65;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .user-actions {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .user-actions h2, .developer-tests h3 {
-            font-weight: 500;
-            color: #495057;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .action-btn.auth-btn {
-            background-color: #0d6efd;
-            color: white;
-            min-width: 150px;
-        }
-        .action-btn.auth-btn:hover:not(:disabled) { background-color: #0b5ed7; }
-
-        .developer-tests {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            text-align: center;
-        }
-        .action-btn.dev-btn {
-            background-color: #ffc107;
-            color: #000;
-        }
-        .action-btn.dev-btn:hover:not(:disabled) { background-color: #e0a800; }
-
-        #api-questions-output {
-            display:none;
-            background-color: #282c34;
-            color: #abb2bf;
-            padding: 15px;
-            border-radius: 4px;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top:15px;
-            text-align: left;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-            font-size: 0.85em;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        #api-questions-output.loading, #api-questions-output.error-msg {
-            color: #6c757d;
-            font-style: italic;
-            background-color: #f8f9fa;
-            white-space: normal;
-        }
-        #api-questions-output.error-msg {
-            color: #dc3545;
-        }
-
-        footer.page-footer {
-            text-align: center;
-            margin-top: auto; /* Posunie pätičku nadol, ak je málo obsahu */
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #6c757d;
-            font-size: 0.9em;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 25px 30px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 450px;
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-        .close-btn:hover,
-        .close-btn:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .modal h3 {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-weight: 500;
-            color: #343a40;
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block; margin-bottom: 6px; font-weight: 500;
-            font-size: 0.95em; color: #495057;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="password"] {
-            width: 100%; padding: 10px; border: 1px solid #ced4da;
-            border-radius: 4px; box-sizing: border-box; font-size: 1em;
-        }
-        .form-group input[type="text"]:focus,
-        .form-group input[type="password"]:focus {
-            border-color: #80bdff; outline: 0;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-        .form-message {
-            margin-top: 15px; font-size: 0.9em;
-            text-align: center; font-weight: 500;
-        }
-        .form-message.success { color: #198754; }
-        .form-message.error { color: #dc3545; }
-        .modal-content .action-btn { width: 100%; margin-top: 10px; }
-        #user-status { color: #343a40; font-weight: 500; }
-        #user-greeting { margin-right: 10px; }
-        #logout-btn {
-            min-width: auto !important; padding: 8px 15px !important;
-            margin-left:10px !important; font-size: 0.95em !important;
-            background-color: #dc3545 !important;
-        }
-        #logout-btn:hover:not(:disabled) { background-color: #c82333 !important; }
-        /* Globálna notifikácia */
-        #global-notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            border-radius: 5px;
-            z-index: 2000;
-            display: none;
-            font-size: 0.95em;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        #global-notification.success { background-color: #28a745; }
-        #global-notification.error { background-color: #dc3545; }
-        #global-notification.info { background-color: #0dcaf0; color: #000;}
-
-    </style>
+    })();
+    </script>
+    <script src="theme.js"></script>
 </head>
 <body>
-<div class="top-bar">
-    <button id="toggle-lang-btn" class="lang-btn">English</button>
-</div>
+<nav class="navbar">
+    <a href="index.php" class="navbar-brand">Math Test</a>
+    <ul class="navbar-nav">
+        <li class="nav-item"><a href="profile.php" id="profile-link" class="nav-link">Môj Profil</a></li>
+        <li class="nav-item"><a href="manual.php" id="manual-link" class="nav-link">Manuál</a></li>
+        <li class="nav-item" id="show-login-modal-btn-container"><button id="show-login-modal-btn" class="btn btn-primary">Prihlásiť sa</button></li>
+        <li class="nav-item" id="show-register-modal-btn-container"><button id="show-register-modal-btn" class="btn btn-secondary">Zaregistrovať sa</button></li>
+        <li class="nav-item"><a href="test.php" id="start-quiz-link" class="btn btn-primary">Spustiť Nový Test</a></li>
+        <li class="nav-item"><button id="toggle-lang-btn" class="btn btn-secondary">English</button></li>
+        <li class="nav-item"><button id="toggle-theme-btn" class="theme-toggle">🌙</button></li>
+    </ul>
+</nav>
 
 <div id="global-notification">Správa...</div>
 
@@ -290,31 +37,8 @@
         <h1 id="main-title">Vitajte v Testovacej Aplikácii z Matematiky</h1>
         <p id="welcome-message" class="welcome-message">Otestujte si svoje vedomosti, pripravte sa na prijímacie skúšky alebo si len tak zopakujte učivo!</p>
     </header>
-
-    <nav class="main-navigation">
-        <a href="test.php" id="start-quiz-link" class="action-btn primary-action">Spustiť Nový Test</a>
-        <a href="profile.php" id="profile-link" class="action-btn secondary-action">Môj Profil</a>
-        <a href="manual.php" id="manual-link" class="action-btn tertiary-action">Manuál</a>
-    </nav>
-
-    <section class="user-actions">
-        <h2 id="user-auth-title">Prihlásenie / Registrácia</h2>
-        <div class="button-group">
-            <button id="show-login-modal-btn" class="action-btn auth-btn">Prihlásiť sa</button>
-            <button id="show-register-modal-btn" class="action-btn auth-btn">Zaregistrovať sa</button>
-        </div>
-        <div id="user-status" style="display: none; margin-top: 20px; padding: 10px; background-color: #e9ecef; border-radius: 4px;">
-            <span id="user-greeting"></span>
-            <button id="logout-btn" class="action-btn">Odhlásiť sa</button>
-        </div>
-    </section>
-
-    <section class="developer-tests">
-        <h3 id="dev-tools-title">Vývojárske Nástroje</h3>
-        <button id="load-all-questions-btn" class="action-btn dev-btn">Načítať Všetky Otázky (API Test)</button>
-        <pre id="api-questions-output"></pre>
-    </section>
 </div>
+
 <footer class="page-footer">
     <p>&copy; <span id="current-year"></span> <span id="footer-team-name">WEBTE2</span>. <span id="footer-rights">Všetky práva vyhradené.</span></p>
 </footer>
@@ -332,7 +56,7 @@
                 <label for="login-password" id="login-password-label">Heslo:</label>
                 <input type="password" id="login-password" name="password" required autocomplete="current-password">
             </div>
-            <button type="submit" id="login-submit-btn" class="action-btn primary-action">Prihlásiť sa</button>
+            <button type="submit" id="login-submit-btn" class="btn btn-primary">Prihlásiť sa</button>
             <p id="login-message" class="form-message"></p>
         </form>
     </div>
@@ -355,7 +79,7 @@
                 <label for="register-password-confirm" id="register-password-confirm-label">Potvrdenie hesla:</label>
                 <input type="password" id="register-password-confirm" name="password_confirm" required autocomplete="new-password">
             </div>
-            <button type="submit" id="register-submit-btn" class="action-btn primary-action">Zaregistrovať sa</button>
+            <button type="submit" id="register-submit-btn" class="btn btn-primary">Zaregistrovať sa</button>
             <p id="register-message" class="form-message"></p>
         </form>
     </div>
@@ -363,7 +87,24 @@
 
 <script>
     const currentYearEl = document.getElementById('current-year');
-    const toggleLangBtn = document.getElementById('toggle-lang-btn');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get references to UI elements
+        const toggleLangBtn = document.getElementById('toggle-lang-btn');
+        
+        // Language toggle event listener
+        if (toggleLangBtn) {
+            toggleLangBtn.addEventListener('click', () => {
+                currentLanguage = currentLanguage === 'sk' ? 'en' : 'sk';
+                localStorage.setItem('mathTestLanguageHomepage', currentLanguage);
+                updateUIText();
+            });
+        } else {
+            console.error('Language toggle button not found!');
+        }
+        
+        // Initialize UI with current language
+        updateUIText();
+    });
     const apiBase = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
     let currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk';
 

@@ -53,7 +53,7 @@
 
 <script>
     let currentLanguageAdmin = localStorage.getItem('mathTestLanguageHomepage') || 'sk';
-    const apiBaseAdmin = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
+    const apiBaseAdmin = 'https://node119.webte.fei.stuba.sk/FinalBoss/api/api.php?route=';
 
     const uiStringsAdmin = {
         sk: {

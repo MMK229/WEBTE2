@@ -82,7 +82,7 @@
 
 
 <script>
-    const apiBase = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
+    const apiBase = 'https://node119.webte.fei.stuba.sk/FinalBoss/api/api.php?route=';
     const localStorageKeyAttempts = 'mathTestAttempts';
     const localStorageKeyAnsweredQuestions = 'mathTestAnsweredQuestions';
     const MAX_QUESTIONS_PER_TEST = 10;

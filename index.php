@@ -95,7 +95,7 @@
 
 <script>
     const currentYearEl = document.getElementById('current-year');
-    const apiBase = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
+    const apiBase = 'https://node119.webte.fei.stuba.sk/FinalBoss/api/api.php?route=';
     let currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk';
 
     const pageTitleEl = document.getElementById('page-title');

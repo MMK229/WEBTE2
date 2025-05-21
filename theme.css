@@ -600,3 +600,74 @@
     --danger-rgb: 224, 82, 96;
     --info-rgb: 57, 192, 237;
   }
+
+.progress-bar-container {
+  width: 100%;
+  background-color: var(--border); /* Svetlé pozadie pre nevyplnenú časť */
+  border-radius: 4px; /* Zaoblené rohy pre kontajner */
+  overflow: hidden;   /* Dôležité, aby vnútorný bar neprečnieval cez zaoblené rohy */
+  margin-top: 8px;
+  margin-bottom: 12px;
+  height: 22px;       /* Výška progress baru */
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); /* Jemný vnútorný tieň */
+}
+
+.progress-bar-correct {
+  height: 100%;
+  background-color: var(--success); /* Farba pre vyplnenú časť (napr. úspech) */
+  color: white;                /* Farba textu vnútri baru */
+  text-align: center;
+  line-height: 22px;           /* Zarovnanie textu na stred vertikálne (zhodné s výškou) */
+  border-radius: 0;            /* Vnútorný bar nepotrebuje radius, ak má kontajner overflow: hidden */
+  /* Ak by kontajner nemal overflow: hidden, nastavte rovnaký radius ako kontajner */
+  width: 0%;                   /* Počiatočná šírka, JavaScript ju prepíše */
+  transition: width 0.6s ease; /* Plynulá animácia zmeny šírky */
+  white-space: nowrap;         /* Zabráni zalomeniu textu, ak je bar príliš úzky */
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+/* Štýly pre text vnútri kategórií v štatistikách - môžete si ich prispôsobiť */
+.category-stat-item h4 {
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.category-stat-summary {
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+.revise-questions-list {
+  font-size: 0.85em;
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.revise-questions-list li {
+  margin-bottom: 3px;
+}
+
+.all-correct-message {
+  font-size: 0.9em;
+  color: var(--success);
+  font-weight: bold;
+}
+
+/* Štýly pre carousel ovládacie prvky, ak by ste chceli upraviť ich veľkosť/odsadenie */
+#category-stats-carousel .carousel-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#category-stats-carousel .carousel-controls button {
+  padding: 6px 12px; /* Menšie tlačidlá pre carousel */
+}
+
+#stat-slide-indicator {
+  font-size: 0.9em;
+  color: var(--text-color);
+}

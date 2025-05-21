@@ -21,13 +21,15 @@
     <ul class="navbar-nav">
         <li class="nav-item"><a href="profile.php" id="profile-link" class="nav-link">Môj Profil</a></li>
         <li class="nav-item"><a href="manual.php" id="manual-link" class="nav-link">Manuál</a></li>
+        <li class="nav-item" id="admin-link-li" style="display: none;"><a href="admin.php" id="admin-link" class="nav-link">Administrácia</a></li>
 
         <li class="nav-item" id="show-login-modal-btn-container"><button id="show-login-modal-btn" class="btn btn-primary">Prihlásiť sa</button></li>
         <li class="nav-item" id="show-register-modal-btn-container"><button id="show-register-modal-btn" class="btn btn-secondary">Zaregistrovať sa</button></li>
 
         <li class="nav-item" id="user-status-li" style="display: none; align-items: center;">
             <span id="user-greeting" style="margin-right: 10px; color: var(--text-color);"></span>
-            <button id="logout-btn" class="btn btn-secondary"></button> </li>
+            <button id="logout-btn" class="btn btn-secondary"></button>
+        </li>
 
         <li class="nav-item"><a href="test.php" id="start-quiz-link" class="btn btn-primary">Spustiť Nový Test</a></li>
         <li class="nav-item"><button id="toggle-lang-btn" class="btn btn-secondary">English</button></li>
@@ -43,7 +45,6 @@
         <h1 id="main-title">Vitajte v Testovacej Aplikácii z Matematiky</h1>
         <p id="welcome-message" class="welcome-message">Otestujte si svoje vedomosti, pripravte sa na prijímacie skúšky alebo si len tak zopakujte učivo!</p>
     </header>
-
 </div>
 
 <footer class="page-footer">
@@ -92,53 +93,29 @@
     </div>
 </div>
 
-<div id="register-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" id="close-register-modal-btn">&times;</span>
-        <h3 id="register-modal-title">Registrácia</h3>
-        <form id="register-form">
-            <div class="form-group">
-                <label for="register-username" id="register-username-label">Používateľské meno:</label>
-                <input type="text" id="register-username" name="username" required autocomplete="username">
-            </div>
-            <div class="form-group">
-                <label for="register-password" id="register-password-label">Heslo:</label>
-                <input type="password" id="register-password" name="password" required autocomplete="new-password">
-            </div>
-            <div class="form-group">
-                <label for="register-password-confirm" id="register-password-confirm-label">Potvrdenie hesla:</label>
-                <input type="password" id="register-password-confirm" name="password_confirm" required autocomplete="new-password">
-            </div>
-            <button type="submit" id="register-submit-btn" class="btn btn-primary">Zaregistrovať sa</button>
-            <p id="register-message" class="form-message"></p>
-        </form>
-    </div>
-</div>
-
 <script>
     const currentYearEl = document.getElementById('current-year');
     const apiBase = 'https://node53.webte.fei.stuba.sk/skuska/api/api.php?route=';
     let currentLanguage = localStorage.getItem('mathTestLanguageHomepage') || 'sk';
 
-    // Globálne referencie na UI elementy
     const pageTitleEl = document.getElementById('page-title');
     const mainTitleEl = document.getElementById('main-title');
     const welcomeMessageEl = document.getElementById('welcome-message');
     const startQuizLinkEl = document.getElementById('start-quiz-link');
     const profileLinkEl = document.getElementById('profile-link');
     const manualLinkEl = document.getElementById('manual-link');
+    const adminLinkLiEl = document.getElementById('admin-link-li');
+    const adminLinkEl = document.getElementById('admin-link');
 
-    const showLoginModalBtnEl = document.getElementById('show-login-modal-btn'); // Tlačidlo samotné
-    const showRegisterModalBtnEl = document.getElementById('show-register-modal-btn'); // Tlačidlo samotné
-    const showLoginModalBtnContainerEl = document.getElementById('show-login-modal-btn-container'); // <li> kontajner
-    const showRegisterModalBtnContainerEl = document.getElementById('show-register-modal-btn-container'); // <li> kontajner
+    const showLoginModalBtnEl = document.getElementById('show-login-modal-btn');
+    const showRegisterModalBtnEl = document.getElementById('show-register-modal-btn');
+    const showLoginModalBtnContainerEl = document.getElementById('show-login-modal-btn-container');
+    const showRegisterModalBtnContainerEl = document.getElementById('show-register-modal-btn-container');
 
-    // Elementy pre stav prihlásenia
     const userStatusLiEl = document.getElementById('user-status-li');
     const userGreetingEl = document.getElementById('user-greeting');
     const logoutBtnEl = document.getElementById('logout-btn');
 
-    // Elementy pre modálne okná
     const loginModal = document.getElementById('login-modal');
     const registerModal = document.getElementById('register-modal');
     const closeLoginModalBtn = document.getElementById('close-login-modal-btn');
@@ -149,30 +126,27 @@
     const registerMessageEl = document.getElementById('register-message');
 
     const globalNotificationEl = document.getElementById('global-notification');
-    const toggleLangBtn = document.getElementById('toggle-lang-btn'); // Presunuté sem pre konzistenciu
+    const toggleLangBtn = document.getElementById('toggle-lang-btn');
 
-    // Elementy pre pätičku
     const footerTeamNameEl = document.getElementById('footer-team-name');
     const footerRightsEl = document.getElementById('footer-rights');
 
-    // Vývojárske nástroje (ak existujú v HTML, inak budú null a nemali by spôsobovať chybu)
+    // Tieto elementy nemusia byť na každej stránke, preto ich použitie bude podmienené
     const userAuthTitleEl = document.getElementById('user-auth-title');
     const devToolsTitleEl = document.getElementById('dev-tools-title');
     const loadAllQuestionsBtnEl = document.getElementById('load-all-questions-btn');
-    const apiQuestionsOutputEl = document.getElementById('api-questions-output');
-
+    // const apiQuestionsOutputEl = document.getElementById('api-questions-output'); // Ak sa používa
 
     const uiStrings = {
         sk: {
             pageTitle: "Domov - Testy z Matematiky", mainTitle: "Vitajte v Testovacej Aplikácii z Matematiky",
             welcomeMessage: "Otestujte si svoje vedomosti, pripravte sa na prijímacie skúšky alebo si len tak zopakujte učivo!",
-            startQuizLink: "Spustiť Nový Test", profileLink: "Môj Profil", userAuthTitle: "Prihlásenie / Registrácia",
-            loginBtnText: "Prihlásiť sa", registerBtnText: "Zaregistrovať sa", // Premenované pre tlačidlá, aby sa nemýlili s modal title
-            devToolsTitle: "Vývojárske Nástroje",
-            loadAllQuestionsBtn: "Načítať Všetky Otázky (API Test)", loadingData: "Načítavam dáta...",
-            errorLoadingData: "Chyba pri načítaní dát.", noDataLoaded: "Žiadne dáta neboli načítané.",
+            startQuizLink: "Spustiť Nový Test", profileLink: "Môj Profil", manualLink: "Manuál", adminLink: "Administrácia",
+            loginBtnText: "Prihlásiť sa", registerBtnText: "Zaregistrovať sa",
+            devToolsTitle: "Vývojárske Nástroje", loadAllQuestionsBtn: "Načítať Všetky Otázky (API Test)",
+            loadingData: "Načítavam dáta...", errorLoadingData: "Chyba pri načítaní dát.", noDataLoaded: "Žiadne dáta neboli načítané.",
             footerTeamName: "WEBTE2", footerRights: "Všetky práva vyhradené.", switchToEnglish: "Switch to English", switchToSlovak: "Prepnúť na Slovenčinu",
-            loginModalTitle: "Prihlásenie", registerModalTitle: "Registrácia", manualLink: "Manuál", usernameLabel: "Používateľské meno:",
+            loginModalTitle: "Prihlásenie", registerModalTitle: "Registrácia", userAuthTitle: "Prihlásenie / Registrácia", usernameLabel: "Používateľské meno:",
             passwordLabel: "Heslo:", passwordConfirmLabel: "Potvrdenie hesla:", loginSubmitBtn: "Prihlásiť sa",
             registerSubmitBtn: "Zaregistrovať sa", registrationSuccess: "Registrácia úspešná! Môžete sa prihlásiť.",
             loginSuccess: "Prihlásenie úspešné!", generalError: "Vyskytla sa chyba. Skúste znova.",
@@ -183,13 +157,12 @@
         en: {
             pageTitle: "Home - Mathematics Tests", mainTitle: "Welcome to the Mathematics Test Application",
             welcomeMessage: "Test your knowledge, prepare for entrance exams, or just review the material!",
-            startQuizLink: "Start New Test", profileLink: "My Profile", manualLink: "Manual", userAuthTitle: "Login / Registration",
+            startQuizLink: "Start New Test", profileLink: "My Profile", manualLink: "Manual", adminLink: "Admin",
             loginBtnText: "Login", registerBtnText: "Register",
-            devToolsTitle: "Developer Tools",
-            loadAllQuestionsBtn: "Load All Questions (API Test)", loadingData: "Loading data...",
-            errorLoadingData: "Error loading data.", noDataLoaded: "No data was loaded.",
+            devToolsTitle: "Developer Tools", loadAllQuestionsBtn: "Load All Questions (API Test)",
+            loadingData: "Loading data...", errorLoadingData: "Error loading data.", noDataLoaded: "No data was loaded.",
             footerTeamName: "WEBTE2", footerRights: "All rights reserved.", switchToEnglish: "Switch to English", switchToSlovak: "Prepnúť na Slovenčinu",
-            loginModalTitle: "Login", registerModalTitle: "Register", usernameLabel: "Username:",
+            loginModalTitle: "Login", registerModalTitle: "Register", userAuthTitle: "Login / Registration", usernameLabel: "Username:",
             passwordLabel: "Password:", passwordConfirmLabel: "Confirm Password:", loginSubmitBtn: "Login",
             registerSubmitBtn: "Register", registrationSuccess: "Registration successful! You can now log in.",
             loginSuccess: "Login successful!", generalError: "An error occurred. Please try again.",
@@ -204,7 +177,7 @@
     function showGlobalNotification(message, type = 'info', duration = 3000) {
         if (globalNotificationEl) {
             globalNotificationEl.textContent = message;
-            globalNotificationEl.className = type; // success, error, info
+            globalNotificationEl.className = type;
             globalNotificationEl.style.display = 'block';
             setTimeout(() => {
                 globalNotificationEl.style.display = 'none';
@@ -220,6 +193,7 @@
         if(startQuizLinkEl) startQuizLinkEl.textContent = t('startQuizLink');
         if(profileLinkEl) profileLinkEl.textContent = t('profileLink');
         if(manualLinkEl) manualLinkEl.textContent = t('manualLink');
+        if(adminLinkEl) adminLinkEl.textContent = t('adminLink');
 
         if(showLoginModalBtnEl) showLoginModalBtnEl.textContent = t('loginBtnText');
         if(showRegisterModalBtnEl) showRegisterModalBtnEl.textContent = t('registerBtnText');
@@ -228,7 +202,6 @@
         if(footerRightsEl) footerRightsEl.textContent = t('footerRights');
         if(toggleLangBtn) toggleLangBtn.textContent = currentLanguage === 'sk' ? t('switchToEnglish') : t('switchToSlovak');
 
-        // Modálne okná
         const loginTitleInModal = document.getElementById('login-modal-title');
         if (loginTitleInModal) loginTitleInModal.textContent = t('loginModalTitle');
         const loginUserLabel = document.getElementById('login-username-label');
@@ -249,7 +222,6 @@
         const regSubmit = document.getElementById('register-submit-btn');
         if (regSubmit) regSubmit.textContent = t('registerSubmitBtn');
 
-        // Ak je používateľ prihlásený, aktualizuj aj texty pre odhlásenie
         const storedUsername = localStorage.getItem('loggedInUsername');
         if (logoutBtnEl && userStatusLiEl && userStatusLiEl.style.display !== 'none') {
             logoutBtnEl.textContent = t('logoutBtn');
@@ -258,10 +230,73 @@
             userGreetingEl.textContent = `${t('loggedInAs')} ${storedUsername}`;
         }
 
-        // Podmienená aktualizácia pre elementy, ktoré nemusia byť vždy prítomné
         if (userAuthTitleEl) userAuthTitleEl.textContent = t('userAuthTitle');
         if (devToolsTitleEl) devToolsTitleEl.textContent = t('devToolsTitle');
         if (loadAllQuestionsBtnEl) loadAllQuestionsBtnEl.textContent = t('loadAllQuestionsBtn');
+    }
+
+    async function checkAdminStatus() {
+        const token = localStorage.getItem('apiToken');
+        if (!token) {
+            if (adminLinkLiEl) adminLinkLiEl.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiBase}is-admin`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.admin) {
+                    if (adminLinkLiEl) adminLinkLiEl.style.display = 'list-item';
+                } else {
+                    if (adminLinkLiEl) adminLinkLiEl.style.display = 'none';
+                }
+            } else {
+                console.error('Error checking admin status:', response.statusText);
+                if (adminLinkLiEl) adminLinkLiEl.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Failed to fetch admin status:', error);
+            if (adminLinkLiEl) adminLinkLiEl.style.display = 'none';
+        }
+    }
+
+    function updateUserStatusUI(isLoggedIn, username = '') {
+        if (isLoggedIn) {
+            if(showLoginModalBtnContainerEl) showLoginModalBtnContainerEl.style.display = 'none';
+            if(showRegisterModalBtnContainerEl) showRegisterModalBtnContainerEl.style.display = 'none';
+            if(userAuthTitleEl) userAuthTitleEl.style.display = 'none';
+
+            if(userStatusLiEl) userStatusLiEl.style.display = 'flex';
+            if(userGreetingEl) userGreetingEl.textContent = `${t('loggedInAs')} ${username}`;
+            if(logoutBtnEl) logoutBtnEl.textContent = t('logoutBtn');
+
+            if(profileLinkEl) {
+                profileLinkEl.classList.remove('disabled-link');
+                profileLinkEl.href = 'profile.php';
+            }
+            checkAdminStatus();
+        } else {
+            if(showLoginModalBtnContainerEl) showLoginModalBtnContainerEl.style.display = 'list-item';
+            if(showRegisterModalBtnContainerEl) showRegisterModalBtnContainerEl.style.display = 'list-item';
+            if(userAuthTitleEl) userAuthTitleEl.style.display = 'block';
+
+            if(userStatusLiEl) userStatusLiEl.style.display = 'none';
+            if(adminLinkLiEl) adminLinkLiEl.style.display = 'none';
+            localStorage.removeItem('apiToken');
+            localStorage.removeItem('loggedInUsername');
+            localStorage.removeItem('userId');
+            if(profileLinkEl) {
+                profileLinkEl.classList.add('disabled-link');
+                profileLinkEl.href = '#';
+            }
+        }
     }
 
     function openModal(modal) {
@@ -313,10 +348,10 @@
 
                 if (response.ok && data.api_token) {
                     if(loginMessageEl) {
-                        loginMessageEl.textContent = t('loginSuccess'); // Opravené - nezobrazuje data.message
+                        loginMessageEl.textContent = t('loginSuccess');
                         loginMessageEl.classList.add('success');
                     }
-                    if (data.message) { console.log("Login API message:", data.message); } // Logovanie správy z API
+                    if (data.message) { console.log("Login API message:", data.message); }
 
                     localStorage.setItem('apiToken', data.api_token);
                     localStorage.setItem('loggedInUsername', username);
@@ -326,7 +361,7 @@
                     updateUserStatusUI(true, username);
                     setTimeout(() => {
                         closeModal(loginModal);
-                        loginForm.reset();
+                        if(loginForm) loginForm.reset();
                     }, 1500);
                 } else {
                     if(loginMessageEl) {
@@ -379,14 +414,14 @@
                 });
                 const data = await response.json();
 
-                if (response.ok && data.api_token && data.message === "Registrovaný") {
+                if (response.ok && data.api_token && data.message === "Registrovaný") { // API vracia api_token pri registrácii podľa Auth.class.php
                     if(registerMessageEl) {
                         registerMessageEl.textContent = t('registrationSuccess');
                         registerMessageEl.classList.add('success');
                     }
                     setTimeout(() => {
                         closeModal(registerModal);
-                        registerForm.reset();
+                        if(registerForm) registerForm.reset();
                     }, 2000);
                 } else {
                     if(registerMessageEl) {
@@ -406,36 +441,6 @@
         });
     }
 
-    function updateUserStatusUI(isLoggedIn, username = '') {
-        if (isLoggedIn) {
-            if(showLoginModalBtnContainerEl) showLoginModalBtnContainerEl.style.display = 'none';
-            if(showRegisterModalBtnContainerEl) showRegisterModalBtnContainerEl.style.display = 'none';
-            if(userAuthTitleEl) userAuthTitleEl.style.display = 'none'; // Ak existuje
-
-            if(userStatusLiEl) userStatusLiEl.style.display = 'flex';
-            if(userGreetingEl) userGreetingEl.textContent = `${t('loggedInAs')} ${username}`;
-            if(logoutBtnEl) logoutBtnEl.textContent = t('logoutBtn');
-
-            if(profileLinkEl) {
-                profileLinkEl.classList.remove('disabled-link');
-                profileLinkEl.href = 'profile.php';
-            }
-        } else {
-            if(showLoginModalBtnContainerEl) showLoginModalBtnContainerEl.style.display = 'list-item';
-            if(showRegisterModalBtnContainerEl) showRegisterModalBtnContainerEl.style.display = 'list-item';
-            if(userAuthTitleEl) userAuthTitleEl.style.display = 'block'; // Ak existuje
-
-            if(userStatusLiEl) userStatusLiEl.style.display = 'none';
-            localStorage.removeItem('apiToken');
-            localStorage.removeItem('loggedInUsername');
-            localStorage.removeItem('userId');
-            if(profileLinkEl) {
-                profileLinkEl.classList.add('disabled-link');
-                profileLinkEl.href = '#';
-            }
-        }
-    }
-
     if(logoutBtnEl) {
         logoutBtnEl.addEventListener('click', () => {
             updateUserStatusUI(false);
@@ -443,12 +448,13 @@
         });
     }
 
-    if(loadAllQuestionsBtnEl) { // Ak existuje tlačidlo pre načítanie otázok
+    if (loadAllQuestionsBtnEl) {
         loadAllQuestionsBtnEl.addEventListener('click', async () => {
-            if(apiQuestionsOutputEl) {
-                apiQuestionsOutputEl.style.display = 'block';
-                apiQuestionsOutputEl.textContent = t('loadingData');
-                apiQuestionsOutputEl.className = 'loading';
+            const apiOutEl = document.getElementById('api-questions-output'); // Načítanie elementu tu
+            if (apiOutEl) {
+                apiOutEl.style.display = 'block';
+                apiOutEl.textContent = t('loadingData');
+                apiOutEl.className = 'loading'; // Predpokladám, že máte CSS pre .loading
             }
             loadAllQuestionsBtnEl.disabled = true;
 
@@ -458,21 +464,22 @@
                     throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
                 }
                 const data = await response.json();
-                if(apiQuestionsOutputEl) {
-                    apiQuestionsOutputEl.className = '';
-                    apiQuestionsOutputEl.textContent = JSON.stringify(data, null, 2);
+                if (apiOutEl) {
+                    apiOutEl.className = ''; // Odstránenie .loading triedy
+                    apiOutEl.textContent = JSON.stringify(data, null, 2);
                 }
             } catch (error) {
                 console.error("Error fetching questions:", error);
-                if(apiQuestionsOutputEl) {
-                    apiQuestionsOutputEl.className = 'error-msg';
-                    apiQuestionsOutputEl.textContent = `${t('errorLoadingData')} \n${error.message}`;
+                if (apiOutEl) {
+                    apiOutEl.className = 'error-msg'; // Predpokladám CSS pre .error-msg
+                    apiOutEl.textContent = `${t('errorLoadingData')} \n${error.message}`;
                 }
             } finally {
                 loadAllQuestionsBtnEl.disabled = false;
             }
         });
     }
+
 
     if(profileLinkEl) {
         profileLinkEl.addEventListener('click', (e) => {
@@ -484,23 +491,18 @@
         });
     }
 
-    if (toggleLangBtn) { // Kontrola, či toggleLangBtn existuje
+    if (toggleLangBtn) {
         toggleLangBtn.addEventListener('click', () => {
             currentLanguage = currentLanguage === 'sk' ? 'en' : 'sk';
             localStorage.setItem('mathTestLanguageHomepage', currentLanguage);
             updateUIText();
         });
-    } else {
-        console.error('Language toggle button not found!');
     }
 
-
-    // Inicializácia pri načítaní stránky
     document.addEventListener('DOMContentLoaded', () => {
         if (currentYearEl) {
             currentYearEl.textContent = new Date().getFullYear();
         }
-
         const storedToken = localStorage.getItem('apiToken');
         const storedUsername = localStorage.getItem('loggedInUsername');
         if (storedToken && storedUsername) {
@@ -508,7 +510,7 @@
         } else {
             updateUserStatusUI(false);
         }
-        updateUIText(); // Prvotné nastavenie textov podľa jazyka
+        updateUIText();
     });
 
 </script>

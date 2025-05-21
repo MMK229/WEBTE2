@@ -74,8 +74,8 @@
         <h3 id="warning-modal-title"></h3>
         <p id="warning-modal-text"></p>
         <div class="button-group">
-            <button id="warning-cancel-btn" class="action-btn secondary-action"></button>
-            <button id="warning-confirm-btn" class="action-btn primary-action"></button>
+            <button id="warning-cancel-btn" class="btn btn-secondary"></button>
+            <button id="warning-confirm-btn" class="btn btn-primary"></button>
         </div>
     </div>
 </div>
@@ -168,7 +168,7 @@
             statCarouselIndicatorText: "Oblasť",
             errorInitializingTest: "Chyba: Nepodarilo sa inicializovať test na serveri. Výsledky nebudú uložené.",
             errorCommunicationInitializingTest: "Chyba komunikácie pri inicializácii testu.",
-            notLoggedInNoSave: "Používateľ nie je prihlásený, test nebude ukladaný na server.",
+            notLoggedInNoSave: "Test nebude ukladaný na server.",
             testResultsSaved: "Výsledky testu úspešne uložené na server.",
             errorSavingTestResults: "Nepodarilo sa uložiť výsledky testu na server.",
             errorCommunicationSavingTest: "Chyba komunikácie pri ukladaní výsledkov testu.",
@@ -201,7 +201,7 @@
             statCarouselIndicatorText: "Area",
             errorInitializingTest: "Error: Could not initialize test on the server. Results will not be saved.",
             errorCommunicationInitializingTest: "Communication error during test initialization.",
-            notLoggedInNoSave: "User not logged in, test results will not be saved to the server.",
+            notLoggedInNoSave: "Test results will not be saved to the server.",
             testResultsSaved: "Test results successfully saved to the server.",
             errorSavingTestResults: "Failed to save test results to the server.",
             errorCommunicationSavingTest: "Communication error when saving test results.",

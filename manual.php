@@ -126,7 +126,7 @@
     </div>
 
     <div class="download-button-container">
-        <button id="download-pdf-btn" class="action-btn primary-action">Stiahnuť Príručku ako PDF</button>
+        <button id="download-pdf-btn" class="btn btn-primary">Stiahnuť Príručku ako PDF</button>ň
     </div>
 
 </div> <footer class="page-footer">

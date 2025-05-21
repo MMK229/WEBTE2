@@ -47,9 +47,9 @@
         <div>
             <span id="api-token-label">Aktuálny token:</span>
             <span id="profile-api-token" class="api-token-display">Načítavam...</span>
-            <button id="toggle-token-visibility-btn" class="action-btn secondary-action" style="margin-left: 5px; padding: 6px 10px; font-size: 0.9em; min-width:auto;">Ukázať</button>
+            <button id="toggle-token-visibility-btn" class="btn btn-secondary" style="margin-left: 5px; padding: 6px 10px; font-size: 0.9em; min-width:auto;">Ukázať</button>
         </div>
-        <button id="regenerate-token-btn" class="action-btn primary-action">Pregenerovať API Token</button>
+        <button id="regenerate-token-btn" class="btn btn-primary">Pregenerovať API Token</button>
         <p id="token-message" class="form-message"></p>
     </section>
 
